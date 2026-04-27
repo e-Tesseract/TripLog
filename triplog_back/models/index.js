@@ -1,5 +1,19 @@
-const User = require('./User');
-const Trip = require('./Trip');
-const Step = require('./Step');
+const { sequelize } = require('../config/database');
 
-module.exports = { User, Trip, Step };
+const User = require('./User')(sequelize);
+const Trip = require('./Trip')(sequelize);
+const Step = require('./Step')(sequelize);
+
+
+User.hasMany(Trip, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Trip.belongsTo(User, { foreignKey: 'userId' });
+
+Trip.hasMany(Step, { foreignKey: 'tripId', onDelete: 'CASCADE' });
+Step.belongsTo(Trip, { foreignKey: 'tripId' });
+
+module.exports = {
+  sequelize,
+  User,
+  Trip,
+  Step
+};

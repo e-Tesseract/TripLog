@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./config/database');
 const usersRoutes = require('./routes/users');
+const tripsRoutes = require('./routes/trips');
 const citiesRoutes = require('./routes/cities.js');
 
 const swaggerUi = require('swagger-ui-express');
@@ -31,6 +32,11 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes 
 app.use('/api/users', usersRoutes);
+app.use('/api/trips', tripsRoutes);
+
+
+
+
 app.use('/api/cities', citiesRoutes);
 
 // 404 
