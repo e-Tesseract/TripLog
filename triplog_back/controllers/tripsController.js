@@ -35,7 +35,7 @@ const getTripById = async (req, res) => {
   }
 };
 
-// POST /api/trips
+
 const createTrip = async (req, res) => {
   try {
     const { title, destination, description, startDate, endDate } = req.body;
@@ -120,7 +120,6 @@ const updateTrip = async (req, res) => {
   }
 };
 
-// DELETE /api/trips/:id
 const deleteTrip = async (req, res) => {
   try {
     const trip = await Trip.findOne({
