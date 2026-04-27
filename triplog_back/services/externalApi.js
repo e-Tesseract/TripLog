@@ -102,30 +102,25 @@ function getDescriptionMeteo(code) {
 
 /////////////////////////// RESTCOUNTRIES - Récupération d'infos sur un pays ////////////////////////
 
-async function getInfosPays(nomPays) {
-    const url = `https://restcountries.com/v3.1/name/${encodeURIComponent(nomPays)}`
-            + `?fields=name,flags,currencies,languages,capital,population`
+async function getInfosPays(codePays) {
+    const url = `https://restcountries.com/v3.1/alpha/${encodeURIComponent(codePays)}`
+              + `?fields=name,flags,currencies,languages,capital,population`
 
     const reponse = await fetch(url)
-    if (!reponse.ok) {
-        return null
-    }
-
     const data = await reponse.json()
-    if (!Array.isArray(data) || data.length === 0) {
+
+    if (!data || data.status === 404) {
         return null
     }
-
-    const pays = data[0]
 
     return {
-        nom: pays.name?.common ?? '',
-        drapeau: pays.flags?.emoji ?? '',
-        capitale: pays.capital?.[0] ?? '',
-        monnaie: Object.values(pays.currencies ?? {})[0]?.name ?? '',
-        symbole: Object.values(pays.currencies ?? {})[0]?.symbol ?? '',
-        langues: Object.values(pays.languages ?? {})[0] ?? '',
-        population: pays.population ?? 0
+        nom: data.name?.common ?? '',
+        drapeau: data.flags?.emoji ?? '',
+        capitale: data.capital?.[0] ?? '',
+        monnaie: Object.values(data.currencies ?? {})[0]?.name ?? '',
+        symbole: Object.values(data.currencies ?? {})[0]?.symbol ?? '',
+        langues: Object.values(data.languages ?? {})[0] ?? '',
+        population: data.population ?? 0
     }
 }
 

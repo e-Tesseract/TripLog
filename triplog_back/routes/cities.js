@@ -12,7 +12,7 @@ const router = express.Router();
  * @swagger
  * /api/cities/search:
  *   get:
- *     summary: Rechercher une ville
+ *     summary: Rechercher une ville par nom
  *     tags: [Cities]
  *     parameters:
  *       - in: query
@@ -33,7 +33,7 @@ router.get('/search', searchCity);
  * @swagger
  * /api/cities/meteo:
  *   get:
- *     summary: Récupérer la météo d'une ville
+ *     summary: Récupérer la météo d'une ville par ses coordonnées
  *     tags: [Cities]
  *     parameters:
  *       - in: query
@@ -60,20 +60,20 @@ router.get('/meteo', getCityMeteo);
  * @swagger
  * /api/cities/infos-pays:
  *   get:
- *     summary: Obtenir les informations d'un pays
+ *     summary: Obtenir les informations d'un pays par son code
  *     tags: [Cities]
  *     parameters:
  *       - in: query
- *         name: nom
+ *         name: code pays
  *         required: true
  *         schema:
  *           type: string
- *         description: Nom du pays
+ *         description: code
  *     responses:
  *       200:
  *         description: Informations du pays
  *       400:
- *         description: Nom du pays requis
+ *         description: Code pays requis
  *       404:
  *         description: Pays introuvable
  */
