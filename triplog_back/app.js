@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./config/database');
 const usersRoutes = require('./routes/users');
+const tripsRoutes = require('./routes/trips');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,11 @@ app.get('/', (req, res) => {
 
 // Routes 
 app.use('/api/users', usersRoutes);
+app.use('/api/trips', tripsRoutes);
+
+
+
+
 
 // 404 
 app.use((req, res) => {
