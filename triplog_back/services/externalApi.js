@@ -107,9 +107,12 @@ async function getInfosPays(nomPays) {
             + `?fields=name,flags,currencies,languages,capital,population`
 
     const reponse = await fetch(url)
-    const data = await reponse.json()
+    if (!reponse.ok) {
+        return null
+    }
 
-    if (!data || data.length === 0) {
+    const data = await reponse.json()
+    if (!Array.isArray(data) || data.length === 0) {
         return null
     }
 
