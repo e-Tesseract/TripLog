@@ -1,6 +1,6 @@
 
 
-//////////////////////// NOMINATIM - Recherche de villes
+//////////////////////// NOMINATIM - Recherche de villes ////////////////////////
 async function searchCities(query) {
 
     // Construire l'URL de la requête Nominatim
@@ -53,7 +53,7 @@ async function searchCities(query) {
 }
 
 
-//////////////////////// OPENWEATHER - Récupération de la météo d'une ville
+//////////////////////// OPENWEATHER - Récupération de la météo d'une ville ////////////////////////
 async function getMeteo(lat, lon) {
 
     // Construire l'URL de la requête Open-Meteo
@@ -100,7 +100,7 @@ function getDescriptionMeteo(code) {
 }
 
 
-/////////////////////////// RESTCOUNTRIES - Récupération d'infos sur un pays
+/////////////////////////// RESTCOUNTRIES - Récupération d'infos sur un pays ////////////////////////
 
 async function getInfosPays(nomPays) {
     const url = `https://restcountries.com/v3.1/name/${encodeURIComponent(nomPays)}`
