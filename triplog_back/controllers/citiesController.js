@@ -26,14 +26,14 @@ const getCityMeteo = async (req, res) => {
 };
 
 const getCountryInfo = async (req, res) => {
-    const { nom } = req.query;
-    if (!nom) {
-        return res.status(400).json({ error: 'Nom du pays requis.' });
+    const { codePays } = req.query;
+    if (!codePays) {
+        return res.status(400).json({ error: 'Code pays requis.' });
     }
 
-    const infos = await getInfosPays(nom);
+    const infos = await getInfosPays(codePays.toUpperCase());
     if (!infos) {
-        return res.status(404).json({ error: `Pays "${nom}" introuvable.` });
+        return res.status(404).json({ error: `Pays "${codePays}" introuvable.` });
     }
 
     res.json(infos);

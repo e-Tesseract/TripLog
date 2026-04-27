@@ -54,6 +54,93 @@ async function searchCities(query) {
 
 
 //////////////////////// OPENWEATHER - Récupération de la météo d'une ville ////////////////////////
+
+// Convertit un code météo Open-Meteo en une description texte du temps
+
+/*
+Weather variable documentation
+WMO Weather interpretation codes (WW)
+Code	Description
+0	Clear sky
+1, 2, 3	Mainly clear, partly cloudy, and overcast
+45, 48	Fog and depositing rime fog
+51, 53, 55	Drizzle: Light, moderate, and dense intensity
+56, 57	Freezing Drizzle: Light and dense intensity
+61, 63, 65	Rain: Slight, moderate and heavy intensity
+66, 67	Freezing Rain: Light and heavy intensity
+71, 73, 75	Snow fall: Slight, moderate, and heavy intensity
+77	Snow grains
+80, 81, 82	Rain showers: Slight, moderate, and violent
+85, 86	Snow showers slight and heavy
+95 *	Thunderstorm: Slight or moderate
+96, 99 *	Thunderstorm with slight and heavy hail
+*/
+
+
+function getDescriptionMeteo(code) {
+
+    switch (code) {
+        case 0:
+            return 'Ciel dégagé';
+        case 1:
+            return 'Principalement dégagé';
+        case 2:
+            return 'Partiellement nuageux';
+        case 3:
+            return 'Couvert';
+        case 45:
+            return 'Brouillard';
+        case 48:
+            return 'Brouillard givrant';
+        case 51:
+            return 'Bruine légère';
+        case 53:
+            return 'Bruine modérée';
+        case 55:
+            return 'Bruine forte';
+        case 56:
+            return 'Bruine verglaçante légère';
+        case 57:
+            return 'Bruine verglaçante forte';
+        case 61:
+            return 'Pluie légère';
+        case 63:
+            return 'Pluie modérée';
+        case 65:
+            return 'Pluie forte';
+        case 66:
+            return 'Pluie verglaçante légère';
+        case 67:
+            return 'Pluie verglaçante forte';
+        case 71:
+            return 'Chute de neige légère';
+        case 73:
+            return 'Chute de neige modérée';
+        case 75:
+            return 'Chute de neige forte';
+        case 77:
+            return 'Grains de neige';
+        case 80:
+            return 'Averses de pluie légères';
+        case 81:
+            return 'Averses de pluie modérées';
+        case 82:
+            return 'Averses de pluie violentes';
+        case 85:
+            return 'Averses de neige légères';
+        case 86:
+            return 'Averses de neige fortes';
+        case 95:
+            return 'Orage léger ou modéré';
+        case 96:
+            return 'Orage avec grêle légère';
+        case 99:
+            return 'Orage avec grêle forte';
+        default:
+            return 'Inconnu';
+    }
+}
+
 async function getMeteo(lat, lon) {
 
     // Construire l'URL de la requête Open-Meteo
@@ -78,26 +165,16 @@ async function getMeteo(lat, lon) {
             date: data.daily.time[i],
             temperatureMax: data.daily.temperature_2m_max[i],
             temperatureMin: data.daily.temperature_2m_min[i],
-            meteo: data.daily.weathercode[i]
+            codeMeteo: data.daily.weathercode[i],
+
+            /* Récupérer la description textuelle du code météo */
+            descriptionMeteo: getDescriptionMeteo(data.daily.weathercode[i])
         })
     }
 
     return jours
 }
 
-// Convertit un code météo Open-Meteo en une description texte du temps
-function getDescriptionMeteo(code) {
-  if (code === 0) return 'Ensoleillé'
-  if (code <= 2) return 'Peu nuageux'
-  if (code === 3) return 'Couvert'
-  if (code <= 49) return 'Brouillard'
-  if (code <= 59) return 'Bruine'
-  if (code <= 69) return 'Pluie'
-  if (code <= 79) return 'Neige'
-  if (code <= 82) return 'Averses'
-  if (code <= 99) return 'Orage'
-  return 'Inconnu'
-}
 
 
 /////////////////////////// RESTCOUNTRIES - Récupération d'infos sur un pays ////////////////////////
