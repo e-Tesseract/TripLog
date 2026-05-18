@@ -2,7 +2,45 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-// REGISTER 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Gestion des utilisateurs
+ */
+
+// REGISTER
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: Créer un compte
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: motdepasse123
+ *     responses:
+ *       201:
+ *         description: Compte créé avec succès, token JWT retourné
+ *       400:
+ *         description: Tous les champs sont requis
+ *       409:
+ *         description: Email déjà utilisé
+ */
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -12,7 +50,7 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Tous les champs sont requis' });
     }
 
-    // Vérifier si l'email a déjà  été utilisé
+    // Vérifier si l'email a déjà été utilisé
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(409).json({ error: 'Email déjà utilisé' });
@@ -53,7 +91,35 @@ const register = async (req, res) => {
   }
 };
 
-// LOGIN 
+// LOGIN
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: Connexion et récupération du token JWT
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: motdepasse123
+ *     responses:
+ *       200:
+ *         description: Connexion réussie, token JWT retourné
+ *       400:
+ *         description: Email et mot de passe requis
+ *       401:
+ *         description: Identifiants incorrects
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,7 +129,7 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Email et mot de passe requis' });
     }
 
-    // Recherche de l' utilisateur
+    // Recherche de l'utilisateur
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
@@ -100,7 +166,29 @@ const login = async (req, res) => {
   }
 };
 
-// GET USER 
+// GET USER
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Récupérer son profil
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Profil utilisateur
+ *       401:
+ *         description: Token manquant
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 const getUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
@@ -121,7 +209,41 @@ const getUser = async (req, res) => {
   }
 };
 
-// UPDATE USER 
+// UPDATE USER
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Modifier son profil
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profil mis à jour
+ *       403:
+ *         description: Accès refusé
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 const updateUser = async (req, res) => {
   try {
     // Vérifier que l'utilisateur modifie son propre compte
@@ -163,7 +285,29 @@ const updateUser = async (req, res) => {
   }
 };
 
-// DELETE USER 
+// DELETE USER
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Supprimer son compte
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Compte supprimé avec succès
+ *       403:
+ *         description: Accès refusé
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 const deleteUser = async (req, res) => {
   try {
     // Vérifier que l'utilisateur supprime son propre compte
