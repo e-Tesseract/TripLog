@@ -12,7 +12,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     setMessage(''); setError('');
     setLoading(true);
     try {
