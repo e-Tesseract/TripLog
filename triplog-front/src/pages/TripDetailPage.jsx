@@ -1,203 +1,163 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import { useTripDetail } from '../hooks/useTripDetail';
 import CitySearch from '../components/CitySearch';
+import StepWeather from '../components/StepWeather';
+import api from '../api/axios';
+
+const emptyForm = { city: '', notes: '', arrivalDate: '', departureDate: '', latitude: '', longitude: '' };
 
 export default function TripDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [trip, setTrip] = useState(null);
-  const [steps, setSteps] = useState([]);
+  const { trip, steps, setSteps, loading, error } = useTripDetail(id);
+
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ city: '', notes: '', arrivalDate: '', departureDate: '', latitude: '', longitude: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState(emptyForm);
+  const [formError, setFormError] = useState('');
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    api.get(`/trips/${id}`)
-      .then(res => {
-        setTrip(res.data);
-        setSteps(res.data.Steps || []);
-      })
-      .catch(() => navigate('/'));
-  }, [id]);
+  function handleCitySelect(city) {
+    setForm((f) => ({ ...f, city: city.nom, latitude: city.latitude, longitude: city.longitude }));
+  }
 
-  const handleCitySelect = (city) => {
-    setForm(f => ({ ...f, city: city.nom, latitude: city.latitude, longitude: city.longitude }));
-  };
-
-  const handleCreateStep = async (e) => {
+  async function handleCreateStep(e) {
     e.preventDefault();
-    setError('');
+    setFormError('');
     setCreating(true);
     try {
       const res = await api.post(`/trips/${id}/steps`, form);
-      setSteps(prev => [...prev, res.data.step].sort((a, b) => new Date(a.arrivalDate) - new Date(b.arrivalDate)));
-      setForm({ city: '', notes: '', arrivalDate: '', departureDate: '', latitude: '', longitude: '' });
+      setSteps((prev) =>
+        [...prev, res.data.step].sort((a, b) => new Date(a.arrivalDate) - new Date(b.arrivalDate))
+      );
+      setForm(emptyForm);
       setShowForm(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la création');
+      setFormError(err.response?.data?.message || 'Erreur lors de la création.');
     } finally {
       setCreating(false);
     }
-  };
+  }
 
-  const handleDeleteStep = async (stepId) => {
+  async function handleDeleteStep(stepId) {
     if (!confirm('Supprimer cette étape ?')) return;
     await api.delete(`/trips/${id}/steps/${stepId}`);
-    setSteps(steps.filter(s => s.id !== stepId));
-  };
+    setSteps((prev) => prev.filter((s) => s.id !== stepId));
+  }
 
-  const formatDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
-
-  if (!trip) return (
-    <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--ink-light)' }}>Chargement…</div>
-  );
+  if (loading) return <div className="page">Chargement…</div>;
+  if (error) return <div className="page"><p className="error">{error}</p></div>;
 
   return (
-    <div className="page fade-up">
-      {/* Back */}
-      <button
-        onClick={() => navigate('/')}
-        style={{
-          background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 500,
-          fontSize: '0.9rem', cursor: 'pointer', padding: 0, marginBottom: '1.5rem',
-          display: 'flex', alignItems: 'center', gap: '0.3rem'
-        }}
-      >
-        ← Retour aux voyages
+    <div className="page">
+      <button className="btn btn-secondary mb-2" onClick={() => navigate('/')}>
+        ← Retour
       </button>
 
-      {/* Trip header */}
-      <div className="card" style={{ marginBottom: '2rem', borderTop: '4px solid var(--coral)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              {trip.countryFlag && <span style={{ fontSize: '2rem' }}>{trip.countryFlag}</span>}
-              <h1 style={{ fontSize: '1.8rem' }}>{trip.title}</h1>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: 'var(--ink-light)' }}>
-              {trip.destination && <span>📍 {trip.destination}</span>}
-              {trip.startDate && <span>📅 {formatDate(trip.startDate)}{trip.endDate ? ` → ${formatDate(trip.endDate)}` : ''}</span>}
-              {trip.currency && <span>💰 {trip.currency}</span>}
-              {trip.language && <span>🗣️ {trip.language}</span>}
-            </div>
-            {trip.description && (
-              <p style={{ marginTop: '0.75rem', color: 'var(--ink-light)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-                {trip.description}
-              </p>
-            )}
-          </div>
-        </div>
+      {/* Infos du voyage */}
+      <div className="card">
+        <h1>{trip.countryFlag} {trip.title}</h1>
+        {trip.destination && <p className="muted">📍 {trip.destination}</p>}
+        {trip.startDate && (
+          <p className="muted">
+            📅 {trip.startDate.slice(0, 10)}
+            {trip.endDate ? ` → ${trip.endDate.slice(0, 10)}` : ''}
+          </p>
+        )}
+        {trip.currency && <p className="muted">💰 {trip.currency} · 🗣️ {trip.language}</p>}
+        {trip.description && <p className="mt-1">{trip.description}</p>}
       </div>
 
-      {/* Steps header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <h2 style={{ fontSize: '1.4rem' }}>
-          Étapes <span style={{ fontSize: '0.9rem', color: 'var(--ink-light)', fontFamily: 'DM Sans, sans-serif', fontWeight: 400 }}>({steps.length})</span>
-        </h2>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? '✕ Annuler' : '+ Ajouter une étape'}
+      {/* Header étapes */}
+      <div className="row-between mb-2">
+        <h2>Étapes ({steps.length})</h2>
+        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Annuler' : '+ Ajouter une étape'}
         </button>
       </div>
 
-      {/* Step form */}
+      {/* Formulaire nouvelle étape */}
       {showForm && (
-        <div className="card fade-up" style={{ marginBottom: '1.5rem', borderTop: '3px solid var(--teal)' }}>
-          <h3 style={{ fontSize: '1rem', marginBottom: '1.1rem' }}>Nouvelle étape</h3>
-          {error && <div className="error-msg">{error}</div>}
+        <div className="card">
+          <h2 className="mb-2">Nouvelle étape</h2>
+          {formError && <p className="error">{formError}</p>}
           <form onSubmit={handleCreateStep}>
             <div className="form-group">
-              <label className="label">Ville *</label>
-              <CitySearch onSelect={handleCitySelect} initialValue={form.city} />
-              {form.city && (
-                <p style={{ fontSize: '0.8rem', color: 'var(--teal)', marginTop: '0.35rem' }}>
-                  ✅ {form.city} {form.latitude ? `(${parseFloat(form.latitude).toFixed(2)}, ${parseFloat(form.longitude).toFixed(2)})` : ''}
-                </p>
-              )}
+              <label>Ville *</label>
+              <CitySearch onSelect={handleCitySelect} />
+              {form.city && <p className="muted mt-1">✅ {form.city}</p>}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid-2">
               <div className="form-group">
-                <label className="label">Date d'arrivée *</label>
-                <input className="input-field" type="date" required value={form.arrivalDate} onChange={e => setForm({ ...form, arrivalDate: e.target.value })} />
+                <label>Date d&apos;arrivée *</label>
+                <input
+                  type="date"
+                  required
+                  value={form.arrivalDate}
+                  min={trip.startDate ? trip.startDate.slice(0, 10) : undefined}
+                  max={trip.endDate ? trip.endDate.slice(0, 10) : undefined}
+                  onChange={(e) => setForm({ ...form, arrivalDate: e.target.value, departureDate: '' })}
+                />
               </div>
               <div className="form-group">
-                <label className="label">Date de départ</label>
-                <input className="input-field" type="date" value={form.departureDate} onChange={e => setForm({ ...form, departureDate: e.target.value })} />
+                <label>Date de départ</label>
+                <input
+                  type="date"
+                  value={form.departureDate}
+                  min={form.arrivalDate || (trip.startDate ? trip.startDate.slice(0, 10) : undefined)}
+                  max={trip.endDate ? trip.endDate.slice(0, 10) : undefined}
+                  disabled={!form.arrivalDate}
+                  onChange={(e) => setForm({ ...form, departureDate: e.target.value })}
+                />
               </div>
             </div>
             <div className="form-group">
-              <label className="label">Notes</label>
-              <input className="input-field" placeholder="Impressions, activités, anecdotes…" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
+              <label>Notes</label>
+              <input
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              />
             </div>
-            <button type="submit" className="btn-primary" disabled={creating || !form.city} style={{ opacity: (creating || !form.city) ? 0.6 : 1 }}>
-              {creating ? 'Création…' : 'Ajouter l\'étape'}
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={creating || !form.city}
+            >
+              {creating ? 'Création…' : 'Ajouter'}
             </button>
           </form>
         </div>
       )}
 
-      {/* Steps list */}
+      {/* Liste des étapes */}
       {steps.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📍</div>
-          <p style={{ color: 'var(--ink-light)' }}>Aucune étape pour ce voyage.</p>
-        </div>
+        <p className="muted">Aucune étape pour ce voyage.</p>
       ) : (
-        <div style={{ position: 'relative' }}>
-          {/* Timeline line */}
-          <div style={{
-            position: 'absolute', left: 16, top: 8, bottom: 8,
-            width: 2, background: 'var(--sand-dark)', borderRadius: 2
-          }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {steps.map((step, i) => (
-              <StepCard key={step.id} step={step} index={i} onDelete={handleDeleteStep} formatDate={formatDate} />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StepCard({ step, index, onDelete, formatDate }) {
-  return (
-    <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-      {/* Timeline dot */}
-      <div style={{
-        width: 32, height: 32, borderRadius: '50%',
-        background: 'var(--teal)', color: 'white',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '0.75rem', fontWeight: 700, flexShrink: 0,
-        boxShadow: '0 0 0 4px var(--sand)',
-        zIndex: 1,
-      }}>
-        {index + 1}
-      </div>
-
-      {/* Card */}
-      <div className="card fade-up" style={{ flex: 1, animationDelay: `${index * 50}ms`, padding: '1rem 1.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-          <div>
-            <h3 style={{ fontSize: '1.05rem', marginBottom: '0.3rem' }}>📍 {step.city}</h3>
-            <div style={{ fontSize: '0.82rem', color: 'var(--ink-light)', display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-              {step.arrivalDate && (
-                <span>📅 {formatDate(step.arrivalDate)}{step.departureDate ? ` → ${formatDate(step.departureDate)}` : ''}</span>
-              )}
-              {step.weatherInfo && <span>🌤️ {step.weatherInfo}</span>}
+        steps.map((step, i) => (
+          <div className="step-item" key={step.id}>
+            <div className="step-number">{i + 1}</div>
+            <div className="card" style={{ flex: 1, marginBottom: 0 }}>
+              <div className="row-between">
+                <div>
+                  <h3>📍 {step.city}</h3>
+                  {step.arrivalDate && (
+                    <p className="muted">
+                      📅 {step.arrivalDate.slice(0, 10)}
+                      {step.departureDate ? ` → ${step.departureDate.slice(0, 10)}` : ''}
+                    </p>
+                  )}
+                  {step.weatherInfo && <p className="muted">🌤️ {step.weatherInfo}</p>}
+                  {step.notes && <p className="mt-1">{step.notes}</p>}
+                  <StepWeather step={step} />
+                </div>
+                <button className="btn btn-danger" onClick={() => handleDeleteStep(step.id)}>
+                  Supprimer
+                </button>
+              </div>
             </div>
-            {step.notes && (
-              <p style={{ marginTop: '0.5rem', fontSize: '0.88rem', color: 'var(--ink)', fontStyle: 'italic' }}>
-                "{step.notes}"
-              </p>
-            )}
           </div>
-          <button className="btn-danger" onClick={() => onDelete(step.id)} style={{ flexShrink: 0, padding: '0.35rem 0.7rem', fontSize: '0.8rem' }}>
-            🗑
-          </button>
-        </div>
-      </div>
+        ))
+      )}
     </div>
   );
 }
