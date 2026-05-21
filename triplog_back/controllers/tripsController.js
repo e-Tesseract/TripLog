@@ -50,20 +50,26 @@ const createTrip = async (req, res) => {
 
     if (destination) {
       try {
-        const url = `https://restcountries.com/v3.1/capital/${encodeURIComponent(destination)}`;
-        const response = await fetch(url);
-        const data = await response.json();
 
-        if (Array.isArray(data) && data.length > 0) {
+        const endpoints = [
+          `https://restcountries.com/v3.1/name/${encodeURIComponent(destination)}?fullText=true`,
+          `https://restcountries.com/v3.1/name/${encodeURIComponent(destination)}`,
+          `https://restcountries.com/v3.1/capital/${encodeURIComponent(destination)}`,
+        ];
+
+        for (const url of endpoints) {
+          const response = await fetch(url);
+          if (!response.ok) continue;
+
+          const data = await response.json();
+          if (!Array.isArray(data) || data.length === 0) continue;
+
           const country = data[0];
 
-          countryFlag = country.flag || null;
-
-          const currencies = Object.values(country.currencies || {});
-          currency = currencies[0]?.name || null;
-
-          const languages = Object.values(country.languages || {});
-          language = languages[0] || null;
+          countryFlag = country.flags?.emoji ?? null;
+          currency = Object.values(country.currencies ?? {})[0]?.name ?? null;
+          language = Object.values(country.languages ?? {})[0] ?? null;
+          break; 
         }
       } catch (apiError) {
         console.log('RestCountries non disponible:', apiError.message);

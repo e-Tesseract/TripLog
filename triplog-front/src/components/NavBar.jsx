@@ -13,12 +13,11 @@ export default function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <span className="navbar-brand">✈️ TripLog</span>
-
+        <span className="navbar-brand">✈ TripLog</span>
         <div className="row">
           <Link to="/">Mes voyages</Link>
           <Link to="/profile">{user?.username}</Link>
-          <button className="btn btn-secondary" onClick={handleLogout}>
+          <button className="btn btn-secondary" onClick={handleLogout} style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}>
             Déconnexion
           </button>
         </div>

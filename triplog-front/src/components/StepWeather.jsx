@@ -3,7 +3,7 @@ import { useStepWeather } from '../hooks/useStepWeather';
 /**
  * Affiche la météo disponible pour la période d'une étape.
  * Si aucun jour ne tombe dans la fenêtre de prévision (7 jours),
- * affiche un message informatif plutôt qu'un bloc vide.
+ * affiche un message informatif.
  */
 export default function StepWeather({ step }) {
   const { forecast, loading } = useStepWeather(step);
@@ -21,23 +21,12 @@ export default function StepWeather({ step }) {
   return (
     <div className="mt-1">
       <p className="muted" style={{ marginBottom: '0.4rem' }}>🌤️ Météo prévue :</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+      <div className="weather-grid">
         {forecast.map((day) => (
-          <div key={day.date} style={{
-            border: '1px solid #e0e0e0',
-            borderRadius: '6px',
-            padding: '0.4rem 0.7rem',
-            fontSize: '0.82rem',
-            background: '#fafafa',
-            minWidth: '100px',
-          }}>
-            <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>
-              {formatDate(day.date)}
-            </div>
-            <div>{day.descriptionMeteo}</div>
-            <div className="muted">
-              {day.temperatureMin}° / {day.temperatureMax}°
-            </div>
+          <div key={day.date} className="weather-day">
+            <div className="weather-day-name">{formatDate(day.date)}</div>
+            <div className="weather-day-desc">{day.descriptionMeteo}</div>
+            <div className="weather-day-temp">{day.temperatureMin}° / {day.temperatureMax}°</div>
           </div>
         ))}
       </div>
