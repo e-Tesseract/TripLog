@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get('session') === 'expired';
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -30,6 +32,12 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="mb-2">Connexion</h1>
+
+        {sessionExpired && (
+          <p className="error">
+            ⏱️ Votre session a expiré, veuillez vous reconnecter.
+          </p>
+        )}
 
         {error && <p className="error">{error}</p>}
 
