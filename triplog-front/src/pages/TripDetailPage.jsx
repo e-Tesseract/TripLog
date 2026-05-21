@@ -120,7 +120,7 @@ export default function TripDetailPage() {
             {trip.endDate ? ` → ${trip.endDate.slice(0, 10)}` : ''}
           </p>
         )}
-        {trip.currency && <p className="muted">💰 {trip.currency} · 🗣️ {trip.language}</p>}
+        {trip.currency && <p className="muted">Devise : {trip.currency} · Langue : {trip.language}</p>}
         {trip.description && <p className="mt-1">{trip.description}</p>}
       </div>
 
@@ -175,7 +175,7 @@ export default function TripDetailPage() {
                     />
                     <div className="row">
                       <button className="btn btn-primary" type="submit" disabled={saving || !editForm.city}>
-                        {saving ? 'Enregistrement…' : 'Enregistrer'}
+                        {saving ? 'Enregistrement...' : 'Enregistrer'}
                       </button>
                       <button className="btn btn-secondary" type="button" onClick={cancelEdit}>
                         Annuler

@@ -24,7 +24,7 @@ export default function CitySearch({ onSelect }) {
         value={query}
         onChange={handleChange}
       />
-      {loading && <p className="muted mt-1">Recherche…</p>}
+      {loading && <p className="muted mt-1">Recherche...</p>}
       {results.length > 0 && (
         <ul className="city-dropdown">
           {results.map((city, i) => (
