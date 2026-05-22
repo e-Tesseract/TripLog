@@ -1,10 +1,5 @@
 import { useStepWeather } from '../hooks/useStepWeather';
 
-/**
- * Affiche la météo disponible pour la période d'une étape.
- * Si aucun jour ne tombe dans la fenêtre de prévision (7 jours),
- * affiche un message informatif.
- */
 export default function StepWeather({ step }) {
   const { forecast, loading } = useStepWeather(step);
 
