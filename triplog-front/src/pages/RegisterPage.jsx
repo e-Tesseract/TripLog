@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
@@ -20,7 +22,7 @@ export default function RegisterPage() {
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Erreur lors de l\'inscription.');
+      setError(err.response?.data?.error || t('register.error'));
     } finally {
       setLoading(false);
     }
@@ -29,13 +31,13 @@ export default function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="mb-2">Créer un compte</h1>
+        <h1 className="mb-2">{t('register.title')}</h1>
 
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Nom d&apos;utilisateur</label>
+            <label>{t('register.username')}</label>
             <input
               type="text"
               required
@@ -44,7 +46,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('register.email')}</label>
             <input
               type="email"
               required
@@ -53,7 +55,7 @@ export default function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label>Mot de passe</label>
+            <label>{t('register.password')}</label>
             <input
               type="password"
               required
@@ -63,12 +65,12 @@ export default function RegisterPage() {
             />
           </div>
           <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? 'Création…' : 'Créer mon compte'}
+            {loading ? t('register.submitting') : t('register.submit')}
           </button>
         </form>
 
         <p className="muted mt-2">
-          Déjà un compte ? <Link to="/login">Se connecter</Link>
+          {t('register.alreadyAccount')} <Link to="/login">{t('register.login')}</Link>
         </p>
       </div>
     </div>
