@@ -2,7 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-// REGISTER 
+/**
+ * Enregistre un nouvel utilisateur.
+ *
+ * @param {Object} req - La requête HTTP, avec les données de l'utilisateur dans req.body.
+ * @param {Object} res - La réponse HTTP, avec les données de l'utilisateur créé ou une erreur.
+ * @returns {Promise<void>}
+ */
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -53,7 +59,14 @@ const register = async (req, res) => {
   }
 };
 
-// LOGIN 
+
+/**
+ * Connecte un utilisateur.
+ *
+ * @param {Object} req - La requête HTTP, avec les données de connexion dans req.body.
+ * @param {Object} res - La réponse HTTP, avec le token JWT et les données de l'utilisateur ou une erreur.
+ * @returns {Promise<void>}
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -100,7 +113,13 @@ const login = async (req, res) => {
   }
 };
 
-// GET USER 
+/**
+ * Récupère les informations d'un utilisateur.
+ *
+ * @param {Object} req - La requête HTTP, avec un paramètre de route "id" pour l'ID de l'utilisateur.
+ * @param {Object} res - La réponse HTTP, avec les données de l'utilisateur ou une erreur.
+ * @returns {Promise<void>}
+ */
 const getUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
@@ -121,7 +140,13 @@ const getUser = async (req, res) => {
   }
 };
 
-// UPDATE USER 
+/**
+ * Met à jour les informations d'un utilisateur.
+ *
+ * @param {Object} req - La requête HTTP, avec un paramètre de route "id" pour l'ID de l'utilisateur et les données de mise à jour dans req.body.
+ * @param {Object} res - La réponse HTTP, avec les données de l'utilisateur mis à jour ou une erreur.
+ * @returns {Promise<void>}
+ */
 const updateUser = async (req, res) => {
   try {
     // Vérifier que l'utilisateur modifie son propre compte
@@ -163,7 +188,13 @@ const updateUser = async (req, res) => {
   }
 };
 
-// DELETE USER 
+/**
+ * Supprime un utilisateur.
+ *
+ * @param {Object} req - La requête HTTP, avec un paramètre de route "id" pour l'ID de l'utilisateur.
+ * @param {Object} res - La réponse HTTP, avec un message de confirmation ou une erreur.
+ * @returns {Promise<void>}
+ */
 const deleteUser = async (req, res) => {
   try {
     // Vérifier que l'utilisateur supprime son propre compte
@@ -171,11 +202,11 @@ const deleteUser = async (req, res) => {
       return res.status(403).json({ error: 'Accès refusé' });
     }
 
+    // Rechercher l'utilisateur et le supprimer
     const user = await User.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
     }
-
     await user.destroy();
 
     res.json({ message: 'Compte supprimé avec succès' });
@@ -188,6 +219,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Exportation des fonctions du contrôleur
 module.exports = {
   register,
   login,
