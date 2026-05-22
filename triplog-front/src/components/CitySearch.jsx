@@ -1,98 +1,38 @@
-import { useState, useRef, useEffect } from 'react';
-import api from '../api/axios';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useCitySearch } from '../hooks/useCitySearch';
 
-export default function CitySearch({ onSelect, initialValue = '' }) {
-  const [query, setQuery] = useState(initialValue);
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const timeoutRef = useRef(null);
-  const wrapperRef = useRef(null);
+export default function CitySearch({ onSelect }) {
+  const [query, setQuery] = useState('');
+  const { results, loading, search, clearResults } = useCitySearch();
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
+  function handleChange(e) {
+    setQuery(e.target.value);
+    search(e.target.value);
+  }
 
-  const handleChange = (e) => {
-    const val = e.target.value;
-    setQuery(val);
-    clearTimeout(timeoutRef.current);
-    if (val.length < 2) { setResults([]); setOpen(false); return; }
-    timeoutRef.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/cities/search?q=${encodeURIComponent(val)}`);
-        setResults(res.data);
-        setOpen(true);
-      } catch {
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 300);
-  };
-
-  const handleSelect = (city) => {
-    onSelect(city);
+  function handleSelect(city) {
     setQuery(city.nom);
-    setResults([]);
-    setOpen(false);
-  };
+    clearResults();
+    onSelect(city);
+  }
 
   return (
-    <div ref={wrapperRef} style={{ position: 'relative' }}>
-      <div style={{ position: 'relative' }}>
-        <input
-          className="input-field"
-          placeholder="Rechercher une ville…"
-          value={query}
-          onChange={handleChange}
-          onFocus={() => results.length > 0 && setOpen(true)}
-          style={{ paddingLeft: '2.5rem' }}
-        />
-        <span style={{
-          position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)',
-          fontSize: '1rem', pointerEvents: 'none', opacity: 0.5
-        }}>🔍</span>
-        {loading && (
-          <span style={{
-            position: 'absolute', right: '0.85rem', top: '50%', transform: 'translateY(-50%)',
-            fontSize: '0.75rem', color: 'var(--teal)'
-          }}>···</span>
-        )}
-      </div>
-
-      {open && results.length > 0 && (
-        <ul style={{
-          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-          background: 'var(--white)', border: '1.5px solid var(--sand-dark)',
-          borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-lg)',
-          listStyle: 'none', zIndex: 50, overflow: 'hidden',
-          maxHeight: 220, overflowY: 'auto',
-        }}>
+    <div className="city-wrapper">
+      <input
+        type="text"
+        placeholder={t('citySearch.placeholder')}
+        value={query}
+        onChange={handleChange}
+      />
+      {loading && <p className="muted mt-1">{t('citySearch.searching')}</p>}
+      {results.length > 0 && (
+        <ul className="city-dropdown">
           {results.map((city, i) => (
-            <li
-              key={i}
-              onClick={() => handleSelect(city)}
-              style={{
-                padding: '0.65rem 1rem',
-                cursor: 'pointer',
-                borderBottom: i < results.length - 1 ? '1px solid var(--sand-dark)' : 'none',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                fontSize: '0.9rem',
-                transition: 'background 0.1s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--sand)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              <span style={{ fontWeight: 500 }}>{city.nom}</span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>{city.pays}</span>
+            <li key={i} className="city-option" onClick={() => handleSelect(city)}>
+              <span>{city.nom}</span>
+              <span className="muted">{city.pays}</span>
             </li>
           ))}
         </ul>
