@@ -1,7 +1,5 @@
 import { useStepWeather } from '../hooks/useStepWeather';
 
-
-
 export default function StepWeather({ step }) {
   const { forecast, loading } = useStepWeather(step);
 
