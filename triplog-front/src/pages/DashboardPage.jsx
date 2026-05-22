@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTrips } from '../hooks/useTrips';
 import api from '../api/axios';
 
@@ -17,6 +18,7 @@ function tripToForm(trip) {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { trips, setTrips, loading, error } = useTrips();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -24,7 +26,6 @@ export default function DashboardPage() {
   const [createError, setCreateError] = useState('');
   const [creating, setCreating] = useState(false);
 
-  // id du voyage en cours d'édition (null = aucun)
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(emptyForm);
   const [editError, setEditError] = useState('');
@@ -40,7 +41,7 @@ export default function DashboardPage() {
       setCreateForm(emptyForm);
       setShowCreateForm(false);
     } catch (err) {
-      setCreateError(err.response?.data?.message || 'Erreur lors de la création.');
+      setCreateError(err.response?.data?.message || t('dashboard.errorCreate'));
     } finally {
       setCreating(false);
     }
@@ -64,71 +65,68 @@ export default function DashboardPage() {
     setSaving(true);
     try {
       const res = await api.put(`/trips/${id}`, editForm);
-      setTrips(trips.map((t) => (t.id === id ? res.data.trip : t)));
+      setTrips(trips.map((trip) => (trip.id === id ? res.data.trip : trip)));
       cancelEdit();
     } catch (err) {
-      setEditError(err.response?.data?.message || 'Erreur lors de la modification.');
+      setEditError(err.response?.data?.message || t('dashboard.errorUpdate'));
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDelete(id) {
-    if (!confirm('Supprimer ce voyage ?')) return;
+    if (!confirm(t('dashboard.confirmDelete'))) return;
     await api.delete(`/trips/${id}`);
-    setTrips(trips.filter((t) => t.id !== id));
+    setTrips(trips.filter((trip) => trip.id !== id));
   }
 
-  if (loading) return <div className="page">Chargement…</div>;
+  if (loading) return <div className="page">{t('common.loading')}</div>;
   if (error) return <div className="page"><p className="error">{error}</p></div>;
 
   return (
     <div className="page">
       <div className="row-between mb-2">
-        <h1>Mes voyages</h1>
+        <h1>{t('dashboard.title')}</h1>
         <button className="btn btn-primary" onClick={() => setShowCreateForm(!showCreateForm)}>
-          {showCreateForm ? 'Annuler' : '+ Nouveau voyage'}
+          {showCreateForm ? t('dashboard.cancel') : t('dashboard.newTrip')}
         </button>
       </div>
 
-      {/* Formulaire de création */}
       {showCreateForm && (
         <div className="card">
-          <h2 className="mb-2">Nouveau voyage</h2>
+          <h2 className="mb-2">{t('dashboard.newTrip')}</h2>
           {createError && <p className="error">{createError}</p>}
           <form onSubmit={handleCreate}>
-            <TripFormFields form={createForm} setForm={setCreateForm} />
+            <TripFormFields form={createForm} setForm={setCreateForm} t={t} />
             <button className="btn btn-primary" type="submit" disabled={creating}>
-              {creating ? 'Création…' : 'Créer'}
+              {creating ? t('dashboard.creating') : t('dashboard.create')}
             </button>
           </form>
         </div>
       )}
 
       {trips.length === 0 ? (
-        <p className="muted">Aucun voyage pour l&apos;instant.</p>
+        <p className="muted">{t('dashboard.noTrips')}</p>
       ) : (
         trips.map((trip) => (
           <div className="card" key={trip.id}>
             {editingId === trip.id ? (
-              // Formulaire d'édition inline
               <>
-                <h2 className="mb-2">Modifier le voyage</h2>
+                <h2 className="mb-2">{t('dashboard.editTrip')}</h2>
                 {editError && <p className="error">{editError}</p>}
                 <form onSubmit={(e) => handleUpdate(e, trip.id)}>
-                  <TripFormFields form={editForm} setForm={setEditForm} />
+                  <TripFormFields form={editForm} setForm={setEditForm} t={t} />
                   <div className="row">
                     <button className="btn btn-primary" type="submit" disabled={saving}>
-                      {saving ? 'Enregistrement…' : 'Enregistrer'}
+                      {saving ? t('dashboard.saving') : t('dashboard.save')}
                     </button>
                     <button className="btn btn-secondary" type="button" onClick={cancelEdit}>
-                      Annuler
+                      {t('dashboard.cancel')}
                     </button>
                   </div>
                 </form>
               </>
             ) : (
-              // Affichage normal
               <div className="row-between">
                 <div>
                   <h2>{trip.countryFlag} {trip.title}</h2>
@@ -142,13 +140,13 @@ export default function DashboardPage() {
                 </div>
                 <div className="row">
                   <button className="btn btn-secondary" onClick={() => navigate(`/trips/${trip.id}`)}>
-                    Voir →
+                    {t('tripCard.see')}
                   </button>
                   <button className="btn btn-secondary" onClick={() => startEdit(trip)}>
-                    Modifier
+                    {t('dashboard.edit')}
                   </button>
                   <button className="btn btn-danger" onClick={() => handleDelete(trip.id)}>
-                    Supprimer
+                    {t('tripCard.delete')}
                   </button>
                 </div>
               </div>
@@ -160,12 +158,11 @@ export default function DashboardPage() {
   );
 }
 
-// Champs du formulaire partagés entre création et édition
-function TripFormFields({ form, setForm }) {
+function TripFormFields({ form, setForm, t }) {
   return (
     <>
       <div className="form-group">
-        <label>Titre *</label>
+        <label>{t('dashboard.titleLabel')} *</label>
         <input
           required
           value={form.title}
@@ -173,14 +170,14 @@ function TripFormFields({ form, setForm }) {
         />
       </div>
       <div className="form-group">
-        <label>Destination</label>
+        <label>{t('dashboard.destination')}</label>
         <input
           value={form.destination}
           onChange={(e) => setForm({ ...form, destination: e.target.value })}
         />
       </div>
       <div className="form-group">
-        <label>Description</label>
+        <label>{t('dashboard.description')}</label>
         <input
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -188,7 +185,7 @@ function TripFormFields({ form, setForm }) {
       </div>
       <div className="grid-2">
         <div className="form-group">
-          <label>Date de départ</label>
+          <label>{t('dashboard.startDate')}</label>
           <input
             type="date"
             value={form.startDate}
@@ -196,7 +193,7 @@ function TripFormFields({ form, setForm }) {
           />
         </div>
         <div className="form-group">
-          <label>Date de retour</label>
+          <label>{t('dashboard.endDate')}</label>
           <input
             type="date"
             value={form.endDate}

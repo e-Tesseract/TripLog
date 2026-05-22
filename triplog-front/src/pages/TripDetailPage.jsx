@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTripDetail } from '../hooks/useTripDetail';
 import CitySearch from '../components/CitySearch';
 import StepWeather from '../components/StepWeather';
@@ -21,15 +22,14 @@ function stepToForm(step) {
 export default function TripDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { trip, steps, setSteps, loading, error } = useTripDetail(id);
 
-  // Création
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [formError, setFormError] = useState('');
   const [creating, setCreating] = useState(false);
 
-  // Édition
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(emptyForm);
   const [editError, setEditError] = useState('');
@@ -55,7 +55,7 @@ export default function TripDetailPage() {
       setForm(emptyForm);
       setShowForm(false);
     } catch (err) {
-      setFormError(err.response?.data?.message || 'Erreur lors de la création.');
+      setFormError(err.response?.data?.message || t('tripDetail.errorCreate'));
     } finally {
       setCreating(false);
     }
@@ -86,19 +86,19 @@ export default function TripDetailPage() {
       );
       cancelEdit();
     } catch (err) {
-      setEditError(err.response?.data?.message || 'Erreur lors de la modification.');
+      setEditError(err.response?.data?.message || t('tripDetail.errorUpdate'));
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDeleteStep(stepId) {
-    if (!confirm('Supprimer cette étape ?')) return;
+    if (!confirm(t('tripDetail.confirmDelete'))) return;
     await api.delete(`/trips/${id}/steps/${stepId}`);
     setSteps((prev) => prev.filter((s) => s.id !== stepId));
   }
 
-  if (loading) return <div className="page">Chargement…</div>;
+  if (loading) return <div className="page">{t('common.loading')}</div>;
   if (error) return <div className="page"><p className="error">{error}</p></div>;
 
   const tripStart = trip.startDate ? trip.startDate.slice(0, 10) : undefined;
@@ -107,10 +107,9 @@ export default function TripDetailPage() {
   return (
     <div className="page">
       <button className="btn btn-secondary mb-2" onClick={() => navigate('/')}>
-        ← Retour
+        {t('tripDetail.back')}
       </button>
 
-      {/* Infos du voyage */}
       <div className="card">
         <h1>{trip.countryFlag} {trip.title}</h1>
         {trip.destination && <p className="muted">📍 {trip.destination}</p>}
@@ -120,22 +119,20 @@ export default function TripDetailPage() {
             {trip.endDate ? ` → ${trip.endDate.slice(0, 10)}` : ''}
           </p>
         )}
-        {trip.currency && <p className="muted">Devise : {trip.currency} · Langue : {trip.language}</p>}
+        {trip.currency && <p className="muted">💰 {trip.currency} · 🗣️ {trip.language}</p>}
         {trip.description && <p className="mt-1">{trip.description}</p>}
       </div>
 
-      {/* Header étapes */}
       <div className="row-between mb-2">
-        <h2>Étapes ({steps.length})</h2>
+        <h2>{t('tripDetail.steps')} ({steps.length})</h2>
         <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Annuler' : '+ Ajouter une étape'}
+          {showForm ? t('tripDetail.cancel') : t('tripDetail.addStep')}
         </button>
       </div>
 
-      {/* Formulaire nouvelle étape */}
       {showForm && (
         <div className="card">
-          <h2 className="mb-2">Nouvelle étape</h2>
+          <h2 className="mb-2">{t('tripDetail.newStep')}</h2>
           {formError && <p className="error">{formError}</p>}
           <form onSubmit={handleCreateStep}>
             <StepFormFields
@@ -144,26 +141,25 @@ export default function TripDetailPage() {
               onCitySelect={handleCitySelect}
               tripStart={tripStart}
               tripEnd={tripEnd}
+              t={t}
             />
             <button className="btn btn-primary" type="submit" disabled={creating || !form.city}>
-              {creating ? 'Création…' : 'Ajouter'}
+              {creating ? t('tripDetail.adding') : t('tripDetail.add')}
             </button>
           </form>
         </div>
       )}
 
-      {/* Liste des étapes */}
       {steps.length === 0 ? (
-        <p className="muted">Aucune étape pour ce voyage.</p>
+        <p className="muted">{t('tripDetail.noSteps')}</p>
       ) : (
         steps.map((step, i) => (
           <div className="step-item" key={step.id}>
             <div className="step-number">{i + 1}</div>
             <div className="card" style={{ flex: 1, marginBottom: 0 }}>
               {editingId === step.id ? (
-                // Formulaire d'édition inline
                 <>
-                  <h3 className="mb-2">Modifier l&apos;étape</h3>
+                  <h3 className="mb-2">{t('tripDetail.editStep')}</h3>
                   {editError && <p className="error">{editError}</p>}
                   <form onSubmit={(e) => handleUpdateStep(e, step.id)}>
                     <StepFormFields
@@ -172,19 +168,19 @@ export default function TripDetailPage() {
                       onCitySelect={handleEditCitySelect}
                       tripStart={tripStart}
                       tripEnd={tripEnd}
+                      t={t}
                     />
                     <div className="row">
                       <button className="btn btn-primary" type="submit" disabled={saving || !editForm.city}>
-                        {saving ? 'Enregistrement...' : 'Enregistrer'}
+                        {saving ? t('tripDetail.saving') : t('tripDetail.save')}
                       </button>
                       <button className="btn btn-secondary" type="button" onClick={cancelEdit}>
-                        Annuler
+                        {t('tripDetail.cancel')}
                       </button>
                     </div>
                   </form>
                 </>
               ) : (
-                // Affichage normal
                 <div className="row-between">
                   <div>
                     <h3>📍 {step.city}</h3>
@@ -199,10 +195,10 @@ export default function TripDetailPage() {
                   </div>
                   <div className="row">
                     <button className="btn btn-secondary" onClick={() => startEdit(step)}>
-                      Modifier
+                      {t('tripDetail.edit')}
                     </button>
                     <button className="btn btn-danger" onClick={() => handleDeleteStep(step.id)}>
-                      Supprimer
+                      {t('tripDetail.delete')}
                     </button>
                   </div>
                 </div>
@@ -215,18 +211,17 @@ export default function TripDetailPage() {
   );
 }
 
-// Champs partagés entre création et édition d'une étape
-function StepFormFields({ form, setForm, onCitySelect, tripStart, tripEnd }) {
+function StepFormFields({ form, setForm, onCitySelect, tripStart, tripEnd, t }) {
   return (
     <>
       <div className="form-group">
-        <label>Ville *</label>
+        <label>{t('tripDetail.city')} *</label>
         <CitySearch onSelect={onCitySelect} />
         {form.city && <p className="muted mt-1">✅ {form.city}</p>}
       </div>
       <div className="grid-2">
         <div className="form-group">
-          <label>Date d&apos;arrivée *</label>
+          <label>{t('tripDetail.arrivalDate')} *</label>
           <input
             type="date"
             required
@@ -237,7 +232,7 @@ function StepFormFields({ form, setForm, onCitySelect, tripStart, tripEnd }) {
           />
         </div>
         <div className="form-group">
-          <label>Date de départ</label>
+          <label>{t('tripDetail.departureDate')}</label>
           <input
             type="date"
             value={form.departureDate}
@@ -249,7 +244,7 @@ function StepFormFields({ form, setForm, onCitySelect, tripStart, tripEnd }) {
         </div>
       </div>
       <div className="form-group">
-        <label>Notes</label>
+        <label>{t('tripDetail.notes')}</label>
         <input
           value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}

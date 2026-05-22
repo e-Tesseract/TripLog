@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const sessionExpired = searchParams.get('session') === 'expired';
 
@@ -22,7 +24,7 @@ export default function LoginPage() {
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Erreur de connexion.');
+      setError(err.response?.data?.error || t('login.error'));
     } finally {
       setLoading(false);
     }
@@ -31,19 +33,17 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="mb-2">Connexion</h1>
+        <h1 className="mb-2">{t('login.title')}</h1>
 
         {sessionExpired && (
-          <p className="error">
-            ⏱️ Votre session a expiré, veuillez vous reconnecter.
-          </p>
+          <p className="error">{t('login.sessionExpired')}</p>
         )}
 
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('login.email')}</label>
             <input
               type="email"
               required
@@ -52,7 +52,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="form-group">
-            <label>Mot de passe</label>
+            <label>{t('login.password')}</label>
             <input
               type="password"
               required
@@ -61,12 +61,12 @@ export default function LoginPage() {
             />
           </div>
           <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? 'Connexion…' : 'Se connecter'}
+            {loading ? t('login.submitting') : t('login.submit')}
           </button>
         </form>
 
         <p className="muted mt-2">
-          Pas de compte ? <Link to="/register">S&apos;inscrire</Link>
+          {t('login.noAccount')} <Link to="/register">{t('login.register')}</Link>
         </p>
       </div>
     </div>
