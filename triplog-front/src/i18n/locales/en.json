@@ -64,6 +64,7 @@
     "deleteTitle": "Delete my account",
     "deleteWarning": "This action is irreversible and deletes all your trips.",
     "deleteBtn": "Delete my account",
+    "errorUpdate": "Error updating profile.",
     "confirmDelete": "Permanently delete your account?"
   },
   "register": {

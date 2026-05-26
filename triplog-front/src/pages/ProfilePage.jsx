@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 
 export default function ProfilePage() {
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [form, setForm] = useState({
     username: user?.username || '',
@@ -27,17 +29,17 @@ export default function ProfilePage() {
 
       const res = await api.put(`/users/${user.id}`, updates);
       login(res.data.user, localStorage.getItem('token'));
-      setMessage('Profil mis à jour !');
+      setMessage(t('profile.success'));
       setForm((f) => ({ ...f, password: '' }));
     } catch (err) {
-      setError(err.response?.data?.error || 'Erreur lors de la mise à jour.');
+      setError(err.response?.data?.error || t('profile.errorUpdate'));
     } finally {
       setLoading(false);
     }
   }
 
   async function handleDelete() {
-    if (!confirm('Supprimer définitivement votre compte ?')) return;
+    if (!confirm(t('profile.confirmDelete'))) return;
     await api.delete(`/users/${user.id}`);
     logout();
     navigate('/login');
@@ -45,24 +47,24 @@ export default function ProfilePage() {
 
   return (
     <div className="page">
-      <h1 className="mb-2">Mon profil</h1>
+      <h1 className="mb-2">{t('profile.title')}</h1>
 
       <div className="card">
-        <h2 className="mb-2">Modifier mes informations</h2>
+        <h2 className="mb-2">{t('profile.editTitle')}</h2>
 
         {message && <p className="success">{message}</p>}
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleUpdate}>
           <div className="form-group">
-            <label>Nom d&apos;utilisateur</label>
+            <label>{t('profile.username')}</label>
             <input
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
             />
           </div>
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('profile.email')}</label>
             <input
               type="email"
               value={form.email}
@@ -70,7 +72,9 @@ export default function ProfilePage() {
             />
           </div>
           <div className="form-group">
-            <label>Nouveau mot de passe <span className="muted">(laisser vide pour ne pas changer)</span></label>
+            <label>
+              {t('profile.newPassword')} <span className="muted">{t('profile.passwordHint')}</span>
+            </label>
             <input
               type="password"
               value={form.password}
@@ -78,16 +82,16 @@ export default function ProfilePage() {
             />
           </div>
           <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? 'Mise à jour…' : 'Enregistrer'}
+            {loading ? t('profile.saving') : t('profile.save')}
           </button>
         </form>
       </div>
 
       <div className="card mt-2">
-        <h2 className="mb-1">Supprimer mon compte</h2>
-        <p className="muted mb-2">Cette action est irréversible et supprime tous vos voyages.</p>
+        <h2 className="mb-1">{t('profile.deleteTitle')}</h2>
+        <p className="muted mb-2">{t('profile.deleteWarning')}</p>
         <button className="btn btn-danger" onClick={handleDelete}>
-          Supprimer mon compte
+          {t('profile.deleteBtn')}
         </button>
       </div>
     </div>

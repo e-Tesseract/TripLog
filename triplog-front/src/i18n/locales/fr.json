@@ -64,6 +64,7 @@
     "deleteTitle": "Supprimer mon compte",
     "deleteWarning": "Cette action est irréversible et supprime tous vos voyages.",
     "deleteBtn": "Supprimer mon compte",
+    "errorUpdate": "Erreur lors de la mise à jour.",
     "confirmDelete": "Supprimer définitivement votre compte ?"
   },
   "register": {
