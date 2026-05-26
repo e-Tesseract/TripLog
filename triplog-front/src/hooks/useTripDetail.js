@@ -13,7 +13,7 @@ export function useTripDetail(id) {
         setTrip(res.data);
         setSteps(res.data.Steps || []);
       })
-      .catch(() => setError('Voyage introuvable.'))
+      .catch(() => setError('common.errorLoadTrip'))
       .finally(() => setLoading(false));
   }, [id]);
 

@@ -90,7 +90,9 @@
     "sessionExpired": "⏱️ Votre session a expiré, veuillez vous reconnecter."
   },
   "common": {
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "errorLoadTrips": "Impossible de charger les voyages.",
+    "errorLoadTrip": "Voyage introuvable."
   },
   "citySearch": {
     "placeholder": "Rechercher une ville…",

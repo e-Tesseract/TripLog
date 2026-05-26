@@ -99,7 +99,7 @@ export default function TripDetailPage() {
   }
 
   if (loading) return <div className="page">{t('common.loading')}</div>;
-  if (error) return <div className="page"><p className="error">{error}</p></div>;
+  if (error) return <div className="page"><p className="error">{t(error)}</p></div>;
 
   const tripStart = trip.startDate ? trip.startDate.slice(0, 10) : undefined;
   const tripEnd = trip.endDate ? trip.endDate.slice(0, 10) : undefined;

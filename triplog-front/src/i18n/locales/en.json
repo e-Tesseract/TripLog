@@ -90,7 +90,9 @@
     "sessionExpired": "⏱️ Your session has expired, please log in again."
   },
   "common": {
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "errorLoadTrips": "Unable to load trips.",
+    "errorLoadTrip": "Trip not found."
   },
   "citySearch": {
     "placeholder": "Search for a city…",

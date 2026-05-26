@@ -9,7 +9,7 @@ export function useTrips() {
   useEffect(() => {
     api.get('/trips')
       .then((res) => setTrips(res.data))
-      .catch(() => setError('Impossible de charger les voyages.'))
+      .catch(() => setError('common.errorLoadTrips'))
       .finally(() => setLoading(false));
   }, []);
 

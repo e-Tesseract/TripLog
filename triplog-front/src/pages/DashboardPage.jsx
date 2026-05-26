@@ -81,7 +81,7 @@ export default function DashboardPage() {
   }
 
   if (loading) return <div className="page">{t('common.loading')}</div>;
-  if (error) return <div className="page"><p className="error">{error}</p></div>;
+  if (error) return <div className="page"><p className="error">{t(error)}</p></div>;
 
   return (
     <div className="page">
