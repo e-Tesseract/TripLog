@@ -6,8 +6,14 @@ import CitySearch from '../components/CitySearch';
 import StepWeather from '../components/StepWeather';
 import api from '../api/axios';
 
+// Formulaire vide pour les étapes
 const emptyForm = { city: '', notes: '', arrivalDate: '', departureDate: '', latitude: '', longitude: '' };
 
+/**
+ * Convertit un step en format de formulaire.
+ * @param {Object} step - Le step à convertir.
+ * @returns {Object} Le formulaire correspondant.
+ */
 function stepToForm(step) {
   return {
     city: step.city || '',
@@ -19,6 +25,12 @@ function stepToForm(step) {
   };
 }
 
+/**
+ * Composant de la page de détail d'un voyage qui affiche les informations du voyage et la liste de ses étapes, avec des options pour ajouter, éditer et supprimer des étapes.
+ * Utilise le hook useTripDetail pour récupérer les données du voyage et gérer l'état de chargement et les erreurs.
+ * Affiche un formulaire pour ajouter une nouvelle étape, et permet d'éditer ou de supprimer les étapes existantes en appelant les endpoints correspondants de l'API.
+ * @return {JSX.Element} Le composant de la page de détail du voyage avec les informations du voyage, la liste des étapes et les formulaires d'ajout/édition.
+ */
 export default function TripDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,14 +47,26 @@ export default function TripDetailPage() {
   const [editError, setEditError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  /**
+   * Gère la sélection d'une ville dans le formulaire d'ajout d'étape.
+   * @param {Object} city - La ville sélectionnée.
+   */
   function handleCitySelect(city) {
     setForm((f) => ({ ...f, city: city.nom, latitude: city.latitude, longitude: city.longitude }));
   }
 
+  /**
+   * Gère la sélection d'une ville dans le formulaire d'édition d'étape.
+   * @param {Object} city - La ville sélectionnée.
+   */
   function handleEditCitySelect(city) {
     setEditForm((f) => ({ ...f, city: city.nom, latitude: city.latitude, longitude: city.longitude }));
   }
 
+  /**
+    * Gère la soumission du formulaire de création d'une nouvelle étape.
+    * @param {Object} e - L'événement de soumission du formulaire.
+   */
   async function handleCreateStep(e) {
     e.preventDefault();
     setFormError('');
@@ -61,18 +85,30 @@ export default function TripDetailPage() {
     }
   }
 
+  /**
+   * Démarre l'édition d'une étape en pré-remplissant le formulaire avec les données de l'étape sélectionnée.
+   * @param {Object} step - L'étape à éditer.
+   */
   function startEdit(step) {
     setEditingId(step.id);
     setEditForm(stepToForm(step));
     setEditError('');
   }
 
+  /**
+   * Annule l'édition d'une étape en réinitialisant le formulaire et l'état d'édition.
+   */
   function cancelEdit() {
     setEditingId(null);
     setEditForm(emptyForm);
     setEditError('');
   }
 
+  /**
+   * Gère la mise à jour d'une étape existante.
+   * @param {Object} e - L'événement de soumission du formulaire.
+   * @param {string} stepId - L'ID de l'étape à mettre à jour.
+   */
   async function handleUpdateStep(e, stepId) {
     e.preventDefault();
     setEditError('');
@@ -92,6 +128,10 @@ export default function TripDetailPage() {
     }
   }
 
+  /**
+   * Gère la suppression d'une étape en appelant l'API et en mettant à jour la liste des étapes.
+   * @param {string} stepId - L'ID de l'étape à supprimer.
+   */
   async function handleDeleteStep(stepId) {
     if (!confirm(t('tripDetail.confirmDelete'))) return;
     await api.delete(`/trips/${id}/steps/${stepId}`);
@@ -211,6 +251,16 @@ export default function TripDetailPage() {
   );
 }
 
+/**
+ * Composant de champs de formulaire pour créer ou éditer une étape d'un voyage, avec des champs pour la ville (avec recherche), les dates d'arrivée et de départ, et les notes.
+ * @param {Object} form - Les données du formulaire.
+ * @param {Function} setForm - La fonction pour mettre à jour les données du formulaire.
+ * @param {Function} onCitySelect - La fonction à appeler lorsque l'utilisateur sélectionne une ville dans le composant CitySearch.
+ * @param {string} tripStart - La date de début du voyage, utilisée pour limiter les dates d'arrivée et de départ.
+ * @param {string} tripEnd - La date de fin du voyage, utilisée pour limiter les dates d'arrivée et de départ.
+ * @param {Function} t - La fonction de traduction.
+ * @returns {JSX.Element} Le composant de champs de formulaire pour une étape de voyage.
+ */
 function StepFormFields({ form, setForm, onCitySelect, tripStart, tripEnd, t }) {
   return (
     <>

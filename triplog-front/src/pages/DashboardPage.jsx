@@ -6,6 +6,11 @@ import api from '../api/axios';
 
 const emptyForm = { title: '', destination: '', description: '', startDate: '', endDate: '' };
 
+/**
+ * Fonction qui convertit un objet de voyage en un format adapté pour le formulaire de création ou d'édition.
+ * @param {Object} trip - L'objet de voyage à convertir, avec des propriétés comme title, destination, description, startDate et endDate.
+ * @returns {Object} Un nouvel objet avec les mêmes propriétés, mais avec des valeurs par défaut pour les champs manquants et des dates formatées pour les champs de type date.
+ */
 function tripToForm(trip) {
   return {
     title: trip.title || '',
@@ -16,6 +21,12 @@ function tripToForm(trip) {
   };
 }
 
+/**
+ * Composant de la page de tableau de bord qui affiche la liste des voyages de l'utilisateur connecté, avec des options pour créer, éditer et supprimer des voyages. 
+ * Utilise le hook useTrips pour récupérer les voyages et gérer l'état de chargement et les erreurs. 
+ * Affiche un formulaire de création ou d'édition selon l'état, et gère les actions de création, mise à jour et suppression en appelant l'API correspondante.
+ * @return {JSX.Element} Le composant de la page de tableau de bord avec la liste des voyages et les formulaires de création/édition.
+ */
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -31,6 +42,10 @@ export default function DashboardPage() {
   const [editError, setEditError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  /**
+   * Gère la création d'un nouveau voyage.
+   * @param {Object} e - L'événement de soumission du formulaire.
+   */
   async function handleCreate(e) {
     e.preventDefault();
     setCreateError('');
@@ -47,18 +62,30 @@ export default function DashboardPage() {
     }
   }
 
+  /**
+   * Démarre l'édition d'un voyage.
+   * @param {Object} trip - Le voyage à éditer.
+   */
   function startEdit(trip) {
     setEditingId(trip.id);
     setEditForm(tripToForm(trip));
     setEditError('');
   }
 
+  /**
+   * Annule l'édition d'un voyage.
+   */
   function cancelEdit() {
     setEditingId(null);
     setEditForm(emptyForm);
     setEditError('');
   }
 
+  /**
+   * Gère la mise à jour d'un voyage existant.
+   * @param {Object} e - L'événement de soumission du formulaire.
+   * @param {string} id - L'ID du voyage à mettre à jour.
+   */
   async function handleUpdate(e, id) {
     e.preventDefault();
     setEditError('');
@@ -74,6 +101,10 @@ export default function DashboardPage() {
     }
   }
 
+  /**
+   * Gère la suppression d'un voyage.
+   * @param {string} id - L'ID du voyage à supprimer.
+   */
   async function handleDelete(id) {
     if (!confirm(t('dashboard.confirmDelete'))) return;
     await api.delete(`/trips/${id}`);
@@ -158,6 +189,13 @@ export default function DashboardPage() {
   );
 }
 
+/**
+ * Affiche les champs du formulaire pour créer ou modifier un voyage.
+ * @param {Object} form - Les données du formulaire.
+ * @param {Function} setForm - La fonction pour mettre à jour les données du formulaire.
+ * @param {Function} t - La fonction de traduction.
+ * @returns {JSX.Element} Le composant React pour les champs du formulaire.
+ */
 function TripFormFields({ form, setForm, t }) {
   return (
     <>

@@ -1,8 +1,13 @@
 import { useStepWeather } from '../hooks/useStepWeather';
 
+/**
+ * Composant pour afficher les prévisions météorologiques d'une étape de voyage.
+ * @param {Object} step - L'étape de voyage pour laquelle afficher la météo.
+ * @returns {JSX.Element} Le composant StepWeather.
+ */
 export default function StepWeather({ step }) {
   const { forecast, loading } = useStepWeather(step);
-
+  
   if (!step.latitude || !step.longitude) return null;
   if (loading) return <p className="muted mt-1">Chargement météo...</p>;
   if (forecast.length === 0) {
@@ -29,6 +34,11 @@ export default function StepWeather({ step }) {
   );
 }
 
+/**
+ * Fonction pour formater une date au format "jour mois" en français.
+ * @param {string} dateStr - La date à formater.
+ * @returns {string} La date formatée.
+ */
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('fr-FR', {
     weekday: 'short',

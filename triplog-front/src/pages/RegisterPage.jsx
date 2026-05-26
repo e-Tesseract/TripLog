@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 
+/**
+ * Composant de la page d'inscription qui affiche un formulaire pour que l'utilisateur puisse créer un nouveau compte en entrant un nom d'utilisateur, une adresse e-mail et un mot de passe. 
+ * @return {JSX.Element} Le composant de la page d'inscription avec le formulaire et les messages d'erreur.
+ */
 export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -13,6 +17,10 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Gère la soumission du formulaire d'inscription.
+   * @param {Object} e - L'événement de soumission.
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
