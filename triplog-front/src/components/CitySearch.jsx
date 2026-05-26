@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useCitySearch } from '../hooks/useCitySearch';
 
 /**
- * Composant de recherche de ville avec autocomplétion.
- * Utilise l'API de recherche de villes.
- * Affiche une liste déroulante de résultats au fur et à mesure de la saisie.
- * Lorsqu'une ville est sélectionnée, appelle onSelect avec les données de la ville.
+ * Composant de recherche de ville avec autocomplétion. Affiche un champ de recherche et une liste déroulante des résultats correspondants. Lorsque l'utilisateur sélectionne une ville, appelle la fonction onSelect avec les données de la ville sélectionnée.
+ * @param {Function} onSelect - Fonction à appeler lorsque l'utilisateur sélectionne une ville, avec les données de la ville en argument.
+ * @returns {JSX.Element} Le composant CitySearch.
  */
 export default function CitySearch({ onSelect }) {
   const [query, setQuery] = useState('');

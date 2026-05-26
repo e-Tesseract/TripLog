@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
+/**
+ * Composant de la page de connexion qui affiche un formulaire pour que l'utilisateur puisse entrer son adresse e-mail et son mot de passe.
+ * @return {JSX.Element} Le composant de la page de connexion avec le formulaire et les messages d'erreur.
+ */
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -15,6 +19,10 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Gère la soumission du formulaire de connexion.
+   * @param {Object} e - L'événement de soumission.
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');

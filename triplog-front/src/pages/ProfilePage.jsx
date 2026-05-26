@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 
+/**
+ * Composant de la page de profil de l'utilisateur qui permet à l'utilisateur de voir et de modifier ses informations personnelles, ainsi que de supprimer son compte. 
+ * Affiche un formulaire pré-rempli avec les informations actuelles de l'utilisateur, et gère les mises à jour et la suppression du compte en appelant les endpoints correspondants de l'API.
+ */
 export default function ProfilePage() {
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
@@ -16,6 +20,10 @@ export default function ProfilePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Gère la soumission du formulaire de mise à jour du profil.
+   * @param {Object} e - L'événement de soumission.
+   */
   async function handleUpdate(e) {
     e.preventDefault();
     setMessage('');
@@ -36,6 +44,9 @@ export default function ProfilePage() {
     }
   }
 
+  /**
+   * Gère la suppression du compte de l'utilisateur.
+   */
   async function handleDelete() {
     if (!confirm('Supprimer définitivement votre compte ?')) return;
     await api.delete(`/users/${user.id}`);

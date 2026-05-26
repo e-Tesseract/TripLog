@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import DashboardPage from '../pages/DashboardPage';
 
+// Mock du module react-i18next pour fournir des traductions statiques pendant les tests
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key) => {
@@ -34,6 +35,7 @@ vi.mock('../api/axios');
 import { useTrips } from '../hooks/useTrips';
 import api from '../api/axios';
 
+// Données de test pour les voyages
 const mockTrips = [
   {
     id: 1,
@@ -53,6 +55,7 @@ const mockTrips = [
   },
 ];
 
+// Fonction utilitaire pour render la page de tableau de bord avec les mocks nécessaires
 const renderPage = () =>
   render(
     <MemoryRouter>
@@ -60,10 +63,12 @@ const renderPage = () =>
     </MemoryRouter>
   );
 
+// Nettoie les mocks avant chaque test pour éviter les interférences entre les tests
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
+// Tests pour la page de tableau de bord
 describe('DashboardPage', () => {
   it('affiche le loader pendant le chargement', () => {
     useTrips.mockReturnValue({ trips: [], setTrips: vi.fn(), loading: true, error: null });
