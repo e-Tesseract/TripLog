@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useTripDetail } from '../hooks/useTripDetail';
 import CitySearch from '../components/CitySearch';
 import StepWeather from '../components/StepWeather';
+import TripMap from '../components/TripMap';
 import api from '../api/axios';
 
 // Formulaire vide pour les étapes
@@ -162,6 +163,12 @@ export default function TripDetailPage() {
         {trip.currency && <p className="muted">💰 {trip.currency} · 🗣️ {trip.language}</p>}
         {trip.description && <p className="mt-1">{trip.description}</p>}
       </div>
+
+      {/* Carte des étapes */}
+      {steps.length > 0 && <TripMap steps={steps} />}
+
+      {/* Header étapes */}
+      <div className="row-between mb-2"></div>
 
       <div className="row-between mb-2">
         <h2>{t('tripDetail.steps')} ({steps.length})</h2>

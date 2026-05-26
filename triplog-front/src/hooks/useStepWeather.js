@@ -32,6 +32,7 @@ export function useStepWeather(step) {
         // Si aucune date d'arrivée n'est fournie, affiche toutes les prévisions disponibles
         if (!arrival) {
           setForecast(days);
+          setLoading(false);
           return;
         }
         // Filtre les prévisions pour ne garder que celles correspondant aux dates d'arrivée et de départ de l'étape
