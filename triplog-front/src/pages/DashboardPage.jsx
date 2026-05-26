@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTrips } from '../hooks/useTrips';
+import { usePagination } from '../hooks/usePagination';
 import api from '../api/axios';
 
 const emptyForm = { title: '', destination: '', description: '', startDate: '', endDate: '' };
@@ -32,6 +33,8 @@ export default function DashboardPage() {
   const { t } = useTranslation();
   const { trips, setTrips, loading, error } = useTrips();
 
+  const { paginated, page, totalPages, goTo } = usePagination(trips, 5);
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [createForm, setCreateForm] = useState(emptyForm);
   const [createError, setCreateError] = useState('');
@@ -55,6 +58,7 @@ export default function DashboardPage() {
       setTrips([res.data.trip, ...trips]);
       setCreateForm(emptyForm);
       setShowCreateForm(false);
+      goTo(1);
     } catch (err) {
       setCreateError(err.response?.data?.message || t('dashboard.errorCreate'));
     } finally {
@@ -139,51 +143,76 @@ export default function DashboardPage() {
       {trips.length === 0 ? (
         <p className="muted">{t('dashboard.noTrips')}</p>
       ) : (
-        trips.map((trip) => (
-          <div className="card" key={trip.id}>
-            {editingId === trip.id ? (
-              <>
-                <h2 className="mb-2">{t('dashboard.editTrip')}</h2>
-                {editError && <p className="error">{editError}</p>}
-                <form onSubmit={(e) => handleUpdate(e, trip.id)}>
-                  <TripFormFields form={editForm} setForm={setEditForm} t={t} />
+        <>
+          {paginated.map((trip) => (
+            <div className="card" key={trip.id}>
+              {editingId === trip.id ? (
+                <>
+                  <h2 className="mb-2">{t('dashboard.editTrip')}</h2>
+                  {editError && <p className="error">{editError}</p>}
+                  <form onSubmit={(e) => handleUpdate(e, trip.id)}>
+                    <TripFormFields form={editForm} setForm={setEditForm} t={t} />
+                    <div className="row">
+                      <button className="btn btn-primary" type="submit" disabled={saving}>
+                        {saving ? t('dashboard.saving') : t('dashboard.save')}
+                      </button>
+                      <button className="btn btn-secondary" type="button" onClick={cancelEdit}>
+                        {t('dashboard.cancel')}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              ) : (
+                <div className="row-between">
+                  <div>
+                    <h2>{trip.countryFlag} {trip.title}</h2>
+                    {trip.destination && <p className="muted">📍 {trip.destination}</p>}
+                    {trip.startDate && (
+                      <p className="muted">
+                        📅 {trip.startDate.slice(0, 10)}
+                        {trip.endDate ? ` → ${trip.endDate.slice(0, 10)}` : ''}
+                      </p>
+                    )}
+                  </div>
                   <div className="row">
-                    <button className="btn btn-primary" type="submit" disabled={saving}>
-                      {saving ? t('dashboard.saving') : t('dashboard.save')}
+                    <button className="btn btn-secondary" onClick={() => navigate(`/trips/${trip.id}`)}>
+                      {t('tripCard.see')}
                     </button>
-                    <button className="btn btn-secondary" type="button" onClick={cancelEdit}>
-                      {t('dashboard.cancel')}
+                    <button className="btn btn-secondary" onClick={() => startEdit(trip)}>
+                      {t('dashboard.edit')}
+                    </button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(trip.id)}>
+                      {t('tripCard.delete')}
                     </button>
                   </div>
-                </form>
-              </>
-            ) : (
-              <div className="row-between">
-                <div>
-                  <h2>{trip.countryFlag} {trip.title}</h2>
-                  {trip.destination && <p className="muted">📍 {trip.destination}</p>}
-                  {trip.startDate && (
-                    <p className="muted">
-                      📅 {trip.startDate.slice(0, 10)}
-                      {trip.endDate ? ` → ${trip.endDate.slice(0, 10)}` : ''}
-                    </p>
-                  )}
                 </div>
-                <div className="row">
-                  <button className="btn btn-secondary" onClick={() => navigate(`/trips/${trip.id}`)}>
-                    {t('tripCard.see')}
-                  </button>
-                  <button className="btn btn-secondary" onClick={() => startEdit(trip)}>
-                    {t('dashboard.edit')}
-                  </button>
-                  <button className="btn btn-danger" onClick={() => handleDelete(trip.id)}>
-                    {t('tripCard.delete')}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))
+              )}
+            </div>
+          ))}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="btn btn-secondary"
+                onClick={() => goTo(page - 1)}
+                disabled={page === 1}
+              >
+                ←
+              </button>
+              <span className="pagination-info">
+                {page} / {totalPages}
+              </span>
+              <button
+                className="btn btn-secondary"
+                onClick={() => goTo(page + 1)}
+                disabled={page === totalPages}
+              >
+                →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

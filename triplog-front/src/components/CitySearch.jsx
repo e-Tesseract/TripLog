@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCitySearch } from '../hooks/useCitySearch';
+import { usePagination } from '../hooks/usePagination';
 
 /**
  * Composant de recherche de ville avec autocomplétion. Affiche un champ de recherche et une liste déroulante des résultats correspondants. Lorsque l'utilisateur sélectionne une ville, appelle la fonction onSelect avec les données de la ville sélectionnée.
@@ -11,6 +12,7 @@ export default function CitySearch({ onSelect }) {
   const [query, setQuery] = useState('');
   const { results, loading, search, clearResults } = useCitySearch();
   const { t } = useTranslation();
+  const { paginated, page, totalPages, goTo } = usePagination(results, 5);
 
   /**
    * Gère le changement de valeur dans le champ de recherche. Lorsque le champ de recherche change, met à jour la query et lance la recherche.
@@ -19,6 +21,7 @@ export default function CitySearch({ onSelect }) {
   function handleChange(e) {
     setQuery(e.target.value);
     search(e.target.value);
+    goTo(1);
   }
 
   /**
@@ -41,14 +44,35 @@ export default function CitySearch({ onSelect }) {
         onChange={handleChange}
       />
       {loading && <p className="muted mt-1">{t('citySearch.searching')}</p>}
-      {results.length > 0 && (
+      {paginated.length > 0 && (
         <ul className="city-dropdown">
-          {results.map((city, i) => (
+          {paginated.map((city, i) => (
             <li key={i} className="city-option" onClick={() => handleSelect(city)}>
               <span>{city.nom}</span>
               <span className="muted">{city.pays}</span>
             </li>
           ))}
+
+          {/* Pagination dans le dropdown */}
+          {totalPages > 1 && (
+            <li className="city-pagination">
+              <button
+                className="btn btn-secondary"
+                onClick={(e) => { e.stopPropagation(); goTo(page - 1); }}
+                disabled={page === 1}
+              >
+                ←
+              </button>
+              <span className="pagination-info">{page} / {totalPages}</span>
+              <button
+                className="btn btn-secondary"
+                onClick={(e) => { e.stopPropagation(); goTo(page + 1); }}
+                disabled={page === totalPages}
+              >
+                →
+              </button>
+            </li>
+          )}
         </ul>
       )}
     </div>

@@ -381,3 +381,32 @@ input:disabled { opacity: 0.4; cursor: not-allowed; }
   /* Boutons */
   .btn { padding: 0.55rem 0.9rem; font-size: 0.84rem; }
 }
+
+/* ─── Pagination ─────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.pagination-info {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+}
+
+.city-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.city-pagination .btn {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}
