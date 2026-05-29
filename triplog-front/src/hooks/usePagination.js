@@ -9,7 +9,7 @@ import { useState } from 'react';
 export function usePagination(items, pageSize = 5) {
   const [page, setPage] = useState(1);
 
-  const totalPages = Math.ceil(items.length / pageSize);
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const start = (page - 1) * pageSize;
   const paginated = items.slice(start, start + pageSize);
 
