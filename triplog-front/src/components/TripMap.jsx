@@ -99,18 +99,16 @@ export default function TripMap({ steps }) {
   if (stepsWithCoords.length === 0) return null;
 
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-      {/* Header */}
-      <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>
+    <div className="card card-map">
+      <div className="card-map-header">
+        <h2 className="card-map-title">
           Carte du voyage
-          <span className="muted" style={{ fontFamily: 'Cabin, sans-serif', fontWeight: 400, fontSize: '0.82rem', marginLeft: '0.5rem' }}>
+          <span className="card-map-count muted">
             {stepsWithCoords.length} étape{stepsWithCoords.length > 1 ? 's' : ''}
           </span>
         </h2>
       </div>
-      {/* Carte Leaflet */}
-      <div ref={mapRef} style={{ height: 380, width: '100%', zIndex: 1 }} />
+      <div ref={mapRef} className="card-map-container" />
     </div>
   );
 }

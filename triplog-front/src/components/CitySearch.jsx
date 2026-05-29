@@ -4,7 +4,9 @@ import { useCitySearch } from '../hooks/useCitySearch';
 import { usePagination } from '../hooks/usePagination';
 
 /**
- * Composant de recherche de ville avec autocomplétion. Affiche un champ de recherche et une liste déroulante des résultats correspondants. Lorsque l'utilisateur sélectionne une ville, appelle la fonction onSelect avec les données de la ville sélectionnée.
+ * Composant de recherche de ville avec autocomplétion. 
+ * Affiche un champ de recherche et une liste déroulante des résultats correspondants. 
+ * Lorsque l'utilisateur sélectionne une ville, appelle la fonction onSelect avec les données de la ville sélectionnée.
  * @param {Function} onSelect - Fonction à appeler lorsque l'utilisateur sélectionne une ville, avec les données de la ville en argument.
  * @returns {JSX.Element} Le composant CitySearch.
  */
@@ -15,7 +17,8 @@ export default function CitySearch({ onSelect }) {
   const { paginated, page, totalPages, goTo } = usePagination(results, 5);
 
   /**
-   * Gère le changement de valeur dans le champ de recherche. Lorsque le champ de recherche change, met à jour la query et lance la recherche.
+   * Gère le changement de valeur dans le champ de recherche. 
+   * Lorsque le champ de recherche change, met à jour la query et lance la recherche.
    * @param {Object} e - L'événement de changement.
    */
   function handleChange(e) {

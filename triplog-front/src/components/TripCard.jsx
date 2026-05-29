@@ -4,7 +4,7 @@ export default function TripCard({ trip, onClick, onDelete }) {
   const { t } = useTranslation();
 
   return (
-    <div className="card" style={{ cursor: 'pointer' }} onClick={onClick}>
+    <div className="card card-clickable" onClick={onClick}>
       <div className="row-between">
         <div>
           <h2>{trip.countryFlag} {trip.title}</h2>
@@ -17,7 +17,7 @@ export default function TripCard({ trip, onClick, onDelete }) {
           )}
           {trip.currency && <p className="muted">💰 {trip.currency}</p>}
           {trip.language && <p className="muted">🗣️ {trip.language}</p>}
-          <p style={{ color: 'var(--teal, #0d9488)', fontWeight: 500, marginTop: '0.3rem' }}>
+          <p className="trip-card-step-count">
             {trip.Steps?.length || 0} {t('tripCard.steps')}
           </p>
         </div>
