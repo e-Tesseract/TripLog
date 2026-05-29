@@ -9,7 +9,6 @@ const stepsRoutes = require('./routes/steps');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
-const citiesRoutes = require('./routes/cities.js');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
