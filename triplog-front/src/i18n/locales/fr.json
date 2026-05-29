@@ -1,0 +1,109 @@
+{
+  "nav": {
+    "dashboard": "Mes voyages",
+    "profile": "Mon profil",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "title": "Mes voyages",
+    "newTrip": "+ Nouveau voyage",
+    "cancel": "Annuler",
+    "titleLabel": "Titre",
+    "destination": "Destination",
+    "description": "Description",
+    "startDate": "Date de départ",
+    "endDate": "Date de retour",
+    "create": "Créer",
+    "creating": "Création…",
+    "noTrips": "Aucun voyage pour l'instant.",
+    "confirmDelete": "Supprimer ce voyage ?",
+    "editTrip": "Modifier le voyage",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "errorCreate": "Erreur lors de la création.",
+    "errorUpdate": "Erreur lors de la modification."
+  },
+  "tripCard": {
+    "see": "Voir →",
+    "delete": "Supprimer",
+    "steps": "étape(s)"
+  },
+  "tripDetail": {
+    "back": "← Retour",
+    "steps": "Étapes",
+    "addStep": "+ Ajouter une étape",
+    "cancel": "Annuler",
+    "newStep": "Nouvelle étape",
+    "city": "Ville",
+    "arrivalDate": "Date d'arrivée",
+    "departureDate": "Date de départ",
+    "notes": "Notes",
+    "add": "Ajouter",
+    "adding": "Création…",
+    "noSteps": "Aucune étape pour ce voyage.",
+    "confirmDelete": "Supprimer cette étape ?",
+    "delete": "Supprimer",
+    "editStep": "Modifier l'étape",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "errorCreate": "Erreur lors de la création.",
+    "errorUpdate": "Erreur lors de la modification."
+  },
+  "profile": {
+    "title": "Mon profil",
+    "editTitle": "Modifier mes informations",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "newPassword": "Nouveau mot de passe",
+    "passwordHint": "(laisser vide pour ne pas changer)",
+    "save": "Enregistrer",
+    "saving": "Mise à jour…",
+    "success": "Profil mis à jour !",
+    "deleteTitle": "Supprimer mon compte",
+    "deleteWarning": "Cette action est irréversible et supprime tous vos voyages.",
+    "deleteBtn": "Supprimer mon compte",
+    "errorUpdate": "Erreur lors de la mise à jour.",
+    "confirmDelete": "Supprimer définitivement votre compte ?"
+  },
+  "register": {
+    "title": "Créer un compte",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Créer mon compte",
+    "submitting": "Création…",
+    "alreadyAccount": "Déjà un compte ?",
+    "login": "Se connecter",
+    "error": "Erreur lors de l'inscription."
+  },
+  "login": {
+    "title": "Connexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "noAccount": "Pas de compte ?",
+    "register": "S'inscrire",
+    "error": "Erreur de connexion.",
+    "sessionExpired": "⏱️ Votre session a expiré, veuillez vous reconnecter."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "errorLoadTrips": "Impossible de charger les voyages.",
+    "errorLoadTrip": "Voyage introuvable."
+  },
+  "citySearch": {
+    "placeholder": "Rechercher une ville…",
+    "searching": "Recherche…"
+  },
+  "stepWeather": {
+    "loading": "Chargement météo…",
+    "unavailable": "🌤️ Météo non disponible pour ces dates (prévisions limitées à 7 jours).",
+    "forecast": "🌤️ Météo prévue :"
+  },
+  "footer": {
+    "brand": "TripLog"
+  }
+}

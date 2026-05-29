@@ -1,6 +1,13 @@
 
 
 //////////////////////// NOMINATIM - Recherche de villes ////////////////////////
+
+/**
+ * Recherche les villes correspondant à une requête donnée en utilisant l'API Nominatim d'OpenStreetMap.
+ * 
+ * @param {string} query - Le terme de recherche pour trouver des villes.
+ * @return {Promise<Array>} - Un tableau d'objets représentant les villes trouvées, avec des informations telles que le nom, le pays, les coordonnées, etc.
+ */
 async function searchCities(query) {
 
     // Construire l'URL de la requête Nominatim
@@ -14,7 +21,6 @@ async function searchCities(query) {
     const reponse = await fetch(url, {
     headers: { 'User-Agent': 'TripLog/1.0' }
     });
-    
 
     const data = await reponse.json();
 
@@ -76,9 +82,13 @@ Code	Description
 96, 99 *	Thunderstorm with slight and heavy hail
 */
 
-
+/**
+ * Convertit un code météo Open-Meteo en une description texte du temps.
+ * 
+ * @param {number} code - Le code météo à convertir.
+ * @return {string} - La description texte correspondant au code météo.
+ */
 function getDescriptionMeteo(code) {
-
     switch (code) {
         case 0:
             return 'Ciel dégagé';
@@ -141,6 +151,13 @@ function getDescriptionMeteo(code) {
     }
 }
 
+/**
+ * Récupère les informations météorologiques pour une ville donnée en utilisant l'API Open-Meteo.
+ * 
+ * @param {number} lat - La latitude de la ville.
+ * @param {number} lon - La longitude de la ville.
+ * @return {Promise<Array>} - Un tableau d'objets représentant les prévisions météorologiques pour les 7 prochains jours, avec des informations telles que la date, la température maximale et minimale, le code météo, et une description du temps.
+ */
 async function getMeteo(lat, lon) {
 
     // Construire l'URL de la requête Open-Meteo
@@ -179,7 +196,15 @@ async function getMeteo(lat, lon) {
 
 /////////////////////////// RESTCOUNTRIES - Récupération d'infos sur un pays ////////////////////////
 
+/**
+ * Récupère les informations sur un pays donné en utilisant l'API REST Countries.
+ * 
+ * @param {string} codePays - Le code du pays à récupérer.
+ * @return {Promise<Object>} - Un objet représentant les informations sur le pays.
+ */
 async function getInfosPays(codePays) {
+
+    // Construire l'URL de la requête REST Countries
     const url = `https://restcountries.com/v3.1/alpha/${encodeURIComponent(codePays)}`
               + `?fields=name,flags,currencies,languages,capital,population`
 
@@ -190,6 +215,7 @@ async function getInfosPays(codePays) {
         return null
     }
 
+    // Retourner les informations sur le pays
     return {
         nom: data.name?.common ?? '',
         drapeau: data.flags?.emoji ?? '',

@@ -1,0 +1,109 @@
+{
+  "nav": {
+    "dashboard": "My trips",
+    "profile": "My profile",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "My trips",
+    "newTrip": "+ New trip",
+    "cancel": "Cancel",
+    "titleLabel": "Title",
+    "destination": "Destination",
+    "description": "Description",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "create": "Create",
+    "creating": "Creating…",
+    "noTrips": "No trips yet.",
+    "confirmDelete": "Delete this trip?",
+    "editTrip": "Edit trip",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving…",
+    "errorCreate": "Error creating trip.",
+    "errorUpdate": "Error updating trip."
+  },
+  "tripCard": {
+    "see": "View →",
+    "delete": "Delete",
+    "steps": "step(s)"
+  },
+  "tripDetail": {
+    "back": "← Back",
+    "steps": "Steps",
+    "addStep": "+ Add a step",
+    "cancel": "Cancel",
+    "newStep": "New step",
+    "city": "City",
+    "arrivalDate": "Arrival date",
+    "departureDate": "Departure date",
+    "notes": "Notes",
+    "add": "Add",
+    "adding": "Adding…",
+    "noSteps": "No steps for this trip.",
+    "confirmDelete": "Delete this step?",
+    "delete": "Delete",
+    "editStep": "Edit step",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving…",
+    "errorCreate": "Error creating step.",
+    "errorUpdate": "Error updating step."
+  },
+  "profile": {
+    "title": "My profile",
+    "editTitle": "Edit my information",
+    "username": "Username",
+    "email": "Email",
+    "newPassword": "New password",
+    "passwordHint": "(leave blank to keep current)",
+    "save": "Save",
+    "saving": "Saving…",
+    "success": "Profile updated!",
+    "deleteTitle": "Delete my account",
+    "deleteWarning": "This action is irreversible and deletes all your trips.",
+    "deleteBtn": "Delete my account",
+    "errorUpdate": "Error updating profile.",
+    "confirmDelete": "Permanently delete your account?"
+  },
+  "register": {
+    "title": "Create an account",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Create my account",
+    "submitting": "Creating…",
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in",
+    "error": "Registration failed."
+  },
+  "login": {
+    "title": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "noAccount": "No account?",
+    "register": "Sign up",
+    "error": "Login failed.",
+    "sessionExpired": "⏱️ Your session has expired, please log in again."
+  },
+  "common": {
+    "loading": "Loading…",
+    "errorLoadTrips": "Unable to load trips.",
+    "errorLoadTrip": "Trip not found."
+  },
+  "citySearch": {
+    "placeholder": "Search for a city…",
+    "searching": "Searching…"
+  },
+  "stepWeather": {
+    "loading": "Loading weather…",
+    "unavailable": "🌤️ Weather unavailable for these dates (forecasts limited to 7 days).",
+    "forecast": "🌤️ Forecast:"
+  },
+  "footer": {
+    "brand": "TripLog"
+  }
+}
