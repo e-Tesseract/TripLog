@@ -1,12 +1,12 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
-import axios from '../api/axios';
+import { createContext, useState } from 'react';
 
-export const AuthContext = createContext(null);
+const AuthContext = createContext(null);
+export { AuthContext };
 
 /**
- * Vérifie si un token JWT est expiré.
- * @param {string} token
- * @returns {boolean}
+ * Fonction pour vérifier si un token JWT est expiré. Décode le token, extrait la date d'expiration et compare avec la date actuelle. Si le token est expiré ou invalide, retourne true.
+ * @param {string} token - Le token JWT à vérifier.
+ * @returns {boolean} true si le token est expiré ou invalide, false sinon.
  */
 function isTokenExpired(token) {
   try {
@@ -18,99 +18,45 @@ function isTokenExpired(token) {
 }
 
 /**
- * Restaure la session depuis le localStorage si le token est encore valide.
- * @returns {{ user: object, token: string } | { user: null, token: null }}
- */
-function restoreSession() {
-  const token = localStorage.getItem('token');
-  const stored = localStorage.getItem('user');
-
-  if (!token || !stored || isTokenExpired(token)) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    return { user: null, token: null };
-  }
-
-  return { user: JSON.parse(stored), token };
-}
-
-/**
- * Fournisseur de contexte d'authentification.
- * Gère la session utilisateur, le renouvellement automatique du token,
- * et l'injection du token dans les headers Axios.
+ * Fournisseur de contexte d'authentification. Gère l'état de l'utilisateur connecté, les fonctions de connexion et de déconnexion, et stocke les données d'authentification dans localStorage pour persister entre les sessions. Lors de l'initialisation, vérifie si un token valide est présent dans localStorage pour restaurer la session de l'utilisateur.
+ * @param {Object} props - Les propriétés du composant, avec children pour les composants enfants à rendre.
+ * @returns {JSX.Element} Le composant AuthProvider qui enveloppe les composants enfants avec le contexte d'authentification.
  */
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => restoreSession().user);
-  const [token, setToken] = useState(() => restoreSession().token);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState(() => {
+    const token = localStorage.getItem('token');
+    const stored = localStorage.getItem('user');
+    if (!token || !stored || isTokenExpired(token)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return null;
+    }
+    return JSON.parse(stored);
+  });
 
   /**
-   * Déconnecte l'utilisateur et nettoie le localStorage.
+   * Gère la connexion de l'utilisateur. Lorsque l'utilisateur se connecte avec succès, stocke le token JWT et les données de l'utilisateur dans localStorage, et met à jour l'état de l'utilisateur dans le contexte.
+   * @param {Object} userData - Les données de l'utilisateur connecté, généralement reçues de l'API après une connexion réussie.
+   * @param {string} token - Le token JWT reçu de l'API après une connexion réussie.
    */
-  const logout = useCallback(() => {
-    setUser(null);
-    setToken(null);
+  function login(userData, token) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  }
+
+  /**
+   * Gère la déconnexion de l'utilisateur. Lorsque l'utilisateur se déconnecte, supprime le token JWT et les données de l'utilisateur de localStorage, et met à jour l'état de l'utilisateur dans le contexte pour indiquer qu'aucun utilisateur n'est connecté.
+   */
+  function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  }, []);
+    setUser(null);
+  }
 
-  /**
-   * Renouvelle le token JWT via l'API.
-   * Déconnecte l'utilisateur si le renouvellement échoue.
-   */
-  const refreshToken = useCallback(async () => {
-    try {
-      const response = await axios.post('/users/refresh', { token });
-      const { newToken } = response.data;
-      setToken(newToken);
-      localStorage.setItem('token', newToken);
-    } catch {
-      logout();
-    }
-  }, [token, logout]);
-
-  /**
-   * Connecte l'utilisateur à partir de ses identifiants.
-   * Stocke le token et les données utilisateur dans le localStorage.
-   * @param {Object} credentials - { email, password }
-   */
-  const login = useCallback(async (credentials) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post('/users/login', credentials);
-      const { user: userData, token: newToken } = response.data;
-
-      setUser(userData);
-      setToken(newToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', newToken);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Erreur lors de la connexion');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Renouvellement automatique du token toutes les 15 minutes
-  useEffect(() => {
-    if (!token) return;
-    const interval = setInterval(refreshToken, 15 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [token, refreshToken]);
-
-  // Injection du token dans les headers Axios
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
-  }, [token]);
-
+  // Retourne le fournisseur de contexte avec les données de l'utilisateur et les fonctions de connexion/déconnexion disponibles pour les composants enfants.
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

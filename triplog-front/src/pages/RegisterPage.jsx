@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 
 /**
- * Composant de la page d'inscription qui affiche un formulaire pour que
- * l'utilisateur puisse créer un nouveau compte en entrant un nom d'utilisateur,
- * une adresse e-mail et un mot de passe.
- * @return {JSX.Element} Le composant de la page d'inscription.
+ * Composant de la page d'inscription qui affiche un formulaire pour que l'utilisateur puisse créer un nouveau compte en entrant un nom d'utilisateur, une adresse e-mail et un mot de passe. 
+ * @return {JSX.Element} Le composant de la page d'inscription avec le formulaire et les messages d'erreur.
  */
 export default function RegisterPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -19,7 +19,6 @@ export default function RegisterPage() {
 
   /**
    * Gère la soumission du formulaire d'inscription.
-   * Redirige vers la page de connexion après une inscription réussie.
    * @param {Object} e - L'événement de soumission.
    */
   async function handleSubmit(e) {
@@ -27,8 +26,9 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
     try {
-      await api.post('/users/register', form);
-      navigate('/login');
+      const res = await api.post('/users/register', form);
+      login(res.data.user, res.data.token);
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || t('register.error'));
     } finally {
