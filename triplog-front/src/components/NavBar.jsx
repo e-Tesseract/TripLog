@@ -29,21 +29,25 @@ export default function NavBar() {
    * bascule entre le français et l'anglais en utilisant la fonction changeLanguage de i18n. 
    * Le texte du bouton change également pour indiquer la langue actuelle.
    */
-  function handleToggleLang() {
+   function handleToggleLang() {
     i18n.changeLanguage(i18n.language === 'fr' ? 'en' : 'fr');
   }
-
+ 
   return (
     <nav className="navbar">
       <div className="navbar-inner">
         <span className="navbar-brand">✈ TripLog</span>
         <div className="row">
-          <Link to="/">{t('nav.dashboard')}</Link>
-          <Link to="/profile">{user?.username}</Link>
-          <button className="btn btn-secondary navbar-button" onClick={handleLogout}>
-            {t('nav.logout')}
-          </button>
-          <button className="btn btn-secondary navbar-button" onClick={handleToggleLang}>
+          {user && (
+            <>
+              <Link to="/">{t('nav.dashboard')}</Link>
+              <Link to="/profile">{user.username}</Link>
+              <button className="btn btn-secondary" onClick={handleLogout} style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}>
+                {t('nav.logout')}
+              </button>
+            </>
+          )}
+          <button className="btn btn-secondary" onClick={handleToggleLang} style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}>
             {i18n.language === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR'}
           </button>
         </div>

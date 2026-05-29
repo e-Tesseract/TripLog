@@ -29,7 +29,7 @@ function AppLayout() {
   const { user } = useAuth();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {user && <NavBar />}
+      <NavBar />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

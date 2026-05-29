@@ -94,6 +94,7 @@ export default function TripMap({ steps }) {
         mapInstanceRef.current = null;
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [steps]);
 
   if (stepsWithCoords.length === 0) return null;
