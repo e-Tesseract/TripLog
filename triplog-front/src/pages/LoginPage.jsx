@@ -2,31 +2,39 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
+import api from '../api/axios';
 
 /**
- * Composant de la page de connexion qui affiche un formulaire pour que
- * l'utilisateur puisse entrer son adresse e-mail et son mot de passe.
- * @return {JSX.Element} Le composant de la page de connexion.
+ * Composant de la page de connexion qui affiche un formulaire pour que l'utilisateur puisse entrer son adresse e-mail et son mot de passe.
+ * @return {JSX.Element} Le composant de la page de connexion avec le formulaire et les messages d'erreur.
  */
 export default function LoginPage() {
-  const { login, loading: authLoading, error: authError } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const sessionExpired = searchParams.get('session') === 'expired';
 
   const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   /**
    * Gère la soumission du formulaire de connexion.
-   * Délègue l'appel API au contexte AuthContext.
    * @param {Object} e - L'événement de soumission.
    */
   async function handleSubmit(e) {
     e.preventDefault();
-    await login(form);
-    if (!authError) {
+    setError('');
+    setLoading(true);
+    try {
+      const res = await api.post('/users/login', form);
+      login(res.data.user, res.data.token);
       navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.error || t('login.error'));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -39,7 +47,7 @@ export default function LoginPage() {
           <p className="error">{t('login.sessionExpired')}</p>
         )}
 
-        {authError && <p className="error">{authError}</p>}
+        {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -60,8 +68,8 @@ export default function LoginPage() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
           </div>
-          <button className="btn btn-primary" type="submit" disabled={authLoading}>
-            {authLoading ? t('login.submitting') : t('login.submit')}
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? t('login.submitting') : t('login.submit')}
           </button>
         </form>
 
